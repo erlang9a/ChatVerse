@@ -437,13 +437,25 @@
         async function initAuth() {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
+                    try {
+                        const cred = await signInWithCustomToken(auth, __initial_auth_token);
+                        currentUser = cred.user;
+                        return currentUser;
+                    } catch (customErr) {
+                        console.warn("Custom token failed, falling back to anonymous auth:", customErr);
+                        const cred = await signInAnonymously(auth);
+                        currentUser = cred.user;
+                        return currentUser;
+                    }
                 } else {
-                    await signInAnonymously(auth);
+                    const cred = await signInAnonymously(auth);
+                    currentUser = cred.user;
+                    return currentUser;
                 }
             } catch (error) {
                 console.error("Auth initialization error:", error);
                 showToast("Gagal terhubung ke server autentikasi", "fa-solid fa-triangle-exclamation");
+                return null;
             }
         }
 
@@ -479,20 +491,39 @@
             const nameInput = document.getElementById('setup-name').value.trim();
             if (!nameInput) return;
 
+            const joinBtn = document.getElementById('join-btn');
+            joinBtn.disabled = true;
+            joinBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> <span>Menghubungkan...</span>`;
+
             if (!currentUser) {
                 await initAuth();
+            }
+
+            if (!currentUser) {
+                joinBtn.disabled = false;
+                joinBtn.innerHTML = `<span>Masuk Ruang Chat</span> <i class="fa-solid fa-arrow-right"></i>`;
+                showToast("Gagal menginisialisasi sesi. Coba lagi.", "fa-solid fa-triangle-exclamation");
+                return;
             }
 
             userProfile.name = nameInput;
             userProfile.photoURL = '';
 
-            document.getElementById('auth-modal').classList.add('hidden');
-            updateSidebarUserUI();
-            await registerUserPresence();
-            listenToChannels();
-            listenToUsers();
-            switchChannel(activeChannelId);
-            showToast(`Selamat datang, ${userProfile.name}!`, 'fa-solid fa-hand-sparkles');
+            try {
+                await registerUserPresence();
+                document.getElementById('auth-modal').classList.add('hidden');
+                updateSidebarUserUI();
+                listenToChannels();
+                listenToUsers();
+                switchChannel(activeChannelId);
+                showToast(`Selamat datang, ${userProfile.name}!`, 'fa-solid fa-hand-sparkles');
+            } catch (err) {
+                console.error("Join chat error:", err);
+                showToast("Gagal menyimpan profil ke database", "fa-solid fa-triangle-exclamation");
+            } finally {
+                joinBtn.disabled = false;
+                joinBtn.innerHTML = `<span>Masuk Ruang Chat</span> <i class="fa-solid fa-arrow-right"></i>`;
+            }
         };
 
         // Open Profile Switch Modal
