@@ -377,13 +377,29 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, updateDoc, addDoc, deleteDoc, getDocs, collection, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Initialization
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        // Firebase Initialization with Fallback Detection for Standalone Browser / Incognito
+        const rawConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const hasValidFirebase = rawConfig && rawConfig.apiKey && rawConfig.projectId;
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-chatverse-app';
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        let app = null;
+        let auth = null;
+        let db = null;
+        let isLocalFallback = !hasValidFirebase;
+
+        if (hasValidFirebase) {
+            try {
+                app = initializeApp(rawConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+            } catch (e) {
+                console.warn("Firebase init error, switching to local mode:", e);
+                isLocalFallback = true;
+            }
+        }
+
+        // Cross-tab sync channel for standalone browser / incognito mode
+        const localSyncChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('chatverse_local_sync') : null;
 
         // Default Channels Seed
         const defaultChannels = [
@@ -419,6 +435,17 @@
 
         // Global App State
         let channels = [...defaultChannels];
+        let localMessages = [
+            {
+                id: 'welcome-1',
+                channelId: 'general',
+                text: 'Halo! Selamat datang di ChatVerse 👋 Silakan mulai obrolan atau buka tab baru untuk simulasi multi-user.',
+                senderId: 'system-bot',
+                senderName: 'ChatVerse Bot',
+                senderColor: '16a34a',
+                createdAtMs: Date.now() - 60000
+            }
+        ];
         let currentUser = null;
         let userProfile = {
             name: '',
@@ -433,8 +460,38 @@
         let onlineUsers = [];
         let pendingConfirmCallback = null;
 
-        // Initialize Authentication First
+        // Listen to cross-tab broadcasts when in standalone browser mode
+        if (localSyncChannel) {
+            localSyncChannel.onmessage = (event) => {
+                if (!isLocalFallback) return;
+                const { type, payload } = event.data || {};
+                if (type === 'NEW_MESSAGE') {
+                    if (!localMessages.find(m => m.id === payload.id)) {
+                        localMessages.push(payload);
+                        if (payload.channelId === activeChannelId) {
+                            renderMessages(localMessages.filter(m => m.channelId === activeChannelId));
+                        }
+                    }
+                } else if (type === 'SYNC_USERS') {
+                    if (!onlineUsers.find(u => u.uid === payload.uid)) {
+                        onlineUsers.push(payload);
+                        renderMemberList();
+                    }
+                } else if (type === 'SYNC_CHANNELS') {
+                    channels = payload;
+                    renderChatList(document.getElementById('chat-search').value);
+                    updateActiveChannelHeader();
+                }
+            };
+        }
+
+        // Initialize Authentication First (with Seamless Standalone Fallback)
         async function initAuth() {
+            if (isLocalFallback) {
+                currentUser = { uid: 'local-' + Math.random().toString(36).substring(2, 10) };
+                return currentUser;
+            }
+
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     try {
@@ -453,26 +510,29 @@
                     return currentUser;
                 }
             } catch (error) {
-                console.error("Auth initialization error:", error);
-                showToast("Gagal terhubung ke server autentikasi", "fa-solid fa-triangle-exclamation");
-                return null;
+                console.warn("Firebase auth blocked (likely Incognito/external browser), switching to Local Mode:", error);
+                isLocalFallback = true;
+                currentUser = { uid: 'local-' + Math.random().toString(36).substring(2, 10) };
+                return currentUser;
             }
         }
 
-        // Auth State Listener
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                if (userProfile.name) {
-                    document.getElementById('auth-modal').classList.add('hidden');
-                    updateSidebarUserUI();
-                    registerUserPresence();
-                    listenToChannels();
-                    listenToUsers();
-                    switchChannel(activeChannelId);
+        // Auth State Listener (Only if Firebase Auth is active)
+        if (auth) {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    currentUser = user;
+                    if (userProfile.name) {
+                        document.getElementById('auth-modal').classList.add('hidden');
+                        updateSidebarUserUI();
+                        registerUserPresence();
+                        listenToChannels();
+                        listenToUsers();
+                        switchChannel(activeChannelId);
+                    }
                 }
-            }
-        });
+            });
+        }
 
         // Avatar Color Selection in Modal
         window.selectAvatarColor = function(hex, btnEl) {
@@ -499,13 +559,6 @@
                 await initAuth();
             }
 
-            if (!currentUser) {
-                joinBtn.disabled = false;
-                joinBtn.innerHTML = `<span>Masuk Ruang Chat</span> <i class="fa-solid fa-arrow-right"></i>`;
-                showToast("Gagal menginisialisasi sesi. Coba lagi.", "fa-solid fa-triangle-exclamation");
-                return;
-            }
-
             userProfile.name = nameInput;
             userProfile.photoURL = '';
 
@@ -516,49 +569,71 @@
                 listenToChannels();
                 listenToUsers();
                 switchChannel(activeChannelId);
-                showToast(`Selamat datang, ${userProfile.name}!`, 'fa-solid fa-hand-sparkles');
+                const modeLabel = isLocalFallback ? ' (Mode Browser Lokal)' : '';
+                showToast(`Selamat datang, ${userProfile.name}!${modeLabel}`, 'fa-solid fa-hand-sparkles');
             } catch (err) {
                 console.error("Join chat error:", err);
-                showToast("Gagal menyimpan profil ke database", "fa-solid fa-triangle-exclamation");
+                showToast("Terjadi kendala saat masuk", "fa-solid fa-triangle-exclamation");
             } finally {
                 joinBtn.disabled = false;
                 joinBtn.innerHTML = `<span>Masuk Ruang Chat</span> <i class="fa-solid fa-arrow-right"></i>`;
             }
         };
 
+        // Helper: Generate Avatar URL
+        function getAvatarUrl(name, color, photoURL) {
+            if (photoURL) return photoURL;
+            const bgColor = (color || '16a34a').replace('#', '');
+            const initials = (name || 'U').trim().substring(0, 2).toUpperCase();
+            return `https://placehold.co/100x100/${bgColor}/ffffff?text=${encodeURIComponent(initials)}`;
+        }
+
+        // Update Sidebar User Profile UI
+        function updateSidebarUserUI() {
+            const avatarEl = document.getElementById('sidebar-user-avatar');
+            const nameEl = document.getElementById('sidebar-user-name');
+            const idEl = document.getElementById('sidebar-user-id');
+
+            if (avatarEl) avatarEl.src = getAvatarUrl(userProfile.name, userProfile.color, userProfile.photoURL);
+            if (nameEl) nameEl.innerText = userProfile.name || 'Tamu';
+            if (idEl && currentUser) idEl.innerText = `ID: ${currentUser.uid.substring(0, 8)}...`;
+        }
+
         // Open Profile Switch Modal
         window.openProfileSwitchModal = function() {
-            document.getElementById('setup-name').value = userProfile.name || '';
-            document.getElementById('auth-modal').classList.remove('hidden');
+            closeAllDrawers();
+            const modal = document.getElementById('auth-modal');
+            modal.classList.remove('hidden');
+            const nameInput = document.getElementById('setup-name');
+            if (nameInput) {
+                nameInput.value = userProfile.name || '';
+                nameInput.focus();
+            }
         };
 
-        // Get Avatar URL helper
-        function getAvatarUrl(name, color = '16a34a', photoURL = '') {
-            if (photoURL) return photoURL;
-            const initial = (name || 'U').substring(0, 1).toUpperCase();
-            return `https://placehold.co/100x100/${color || '16a34a'}/ffffff?text=${encodeURIComponent(initial)}`;
-        }
-
-        // Update Sidebar User UI
-        function updateSidebarUserUI() {
-            const avatarUrl = getAvatarUrl(userProfile.name, userProfile.color, userProfile.photoURL);
-            document.getElementById('sidebar-user-avatar').src = avatarUrl;
-            document.getElementById('sidebar-user-name').innerText = userProfile.name || 'Tamu';
-            document.getElementById('sidebar-user-id').innerText = currentUser ? `ID: ${currentUser.uid.substring(0, 8)}...` : 'Terhubung';
-        }
-
-        // Register / Update User Presence in Firestore
+        // Register / Update User Presence in Firestore or Local State
         async function registerUserPresence() {
             if (!currentUser || !userProfile.name) return;
+            const userData = {
+                uid: currentUser.uid,
+                name: userProfile.name,
+                color: userProfile.color,
+                photoURL: userProfile.photoURL || '',
+                lastActive: Date.now()
+            };
+
+            if (isLocalFallback) {
+                const idx = onlineUsers.findIndex(u => u.uid === currentUser.uid);
+                if (idx >= 0) onlineUsers[idx] = userData;
+                else onlineUsers.push(userData);
+                renderMemberList();
+                if (localSyncChannel) localSyncChannel.postMessage({ type: 'SYNC_USERS', payload: userData });
+                return;
+            }
+
             try {
                 const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'chat_users', currentUser.uid);
-                await setDoc(userDocRef, {
-                    uid: currentUser.uid,
-                    name: userProfile.name,
-                    color: userProfile.color,
-                    photoURL: userProfile.photoURL || '',
-                    lastActive: Date.now()
-                }, { merge: true });
+                await setDoc(userDocRef, userData, { merge: true });
             } catch (error) {
                 console.error("Error updating user presence:", error);
             }
@@ -567,6 +642,10 @@
         // Listen to Active Users in Real-time
         function listenToUsers() {
             if (!currentUser) return;
+            if (isLocalFallback) {
+                renderMemberList();
+                return;
+            }
             if (unsubscribeUsers) unsubscribeUsers();
 
             const usersCol = collection(db, 'artifacts', appId, 'public', 'data', 'chat_users');
@@ -586,6 +665,11 @@
         // Listen to Channels in Real-time
         async function listenToChannels() {
             if (!currentUser) return;
+            if (isLocalFallback) {
+                renderChatList(document.getElementById('chat-search').value);
+                updateActiveChannelHeader();
+                return;
+            }
             if (unsubscribeChannels) unsubscribeChannels();
 
             const channelsCol = collection(db, 'artifacts', appId, 'public', 'data', 'chat_channels');
@@ -800,16 +884,26 @@
             const colors = ['16a34a', '3b82f6', '8b5cf6', 'ec4899', 'f59e0b', '06b6d4'];
             const randomColor = colors[Math.floor(Math.random() * colors.length)];
             const newId = 'ch-' + Date.now();
+            const newChannelObj = {
+                id: newId,
+                name: rawName,
+                color: randomColor,
+                subtitle: desc,
+                createdBy: currentUser.uid,
+                createdAtMs: Date.now()
+            };
+
+            if (isLocalFallback) {
+                channels.push(newChannelObj);
+                if (localSyncChannel) localSyncChannel.postMessage({ type: 'SYNC_CHANNELS', payload: channels });
+                closeCreateChannelModal();
+                switchChannel(newId);
+                showToast(`Group "${rawName}" berhasil dibuat!`, 'fa-solid fa-circle-check');
+                return;
+            }
 
             try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'chat_channels', newId), {
-                    id: newId,
-                    name: rawName,
-                    color: randomColor,
-                    subtitle: desc,
-                    createdBy: currentUser.uid,
-                    createdAtMs: Date.now()
-                });
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'chat_channels', newId), newChannelObj);
                 closeCreateChannelModal();
                 switchChannel(newId);
                 showToast(`Group "${rawName}" berhasil dibuat!`, 'fa-solid fa-circle-check');
@@ -851,6 +945,20 @@
                 rawName = '#' + rawName.toLowerCase().replace(/\s+/g, '-');
             }
             const desc = document.getElementById('rename-channel-desc').value.trim() || 'Grup diskusi';
+
+            if (isLocalFallback) {
+                const target = channels.find(c => c.id === channelId);
+                if (target) {
+                    target.name = rawName;
+                    target.subtitle = desc;
+                }
+                if (localSyncChannel) localSyncChannel.postMessage({ type: 'SYNC_CHANNELS', payload: channels });
+                renderChatList(document.getElementById('chat-search').value);
+                updateActiveChannelHeader();
+                closeRenameChannelModal();
+                showToast(`Nama group diubah menjadi "${rawName}"`, 'fa-solid fa-pen-to-square');
+                return;
+            }
 
             try {
                 const chRef = doc(db, 'artifacts', appId, 'public', 'data', 'chat_channels', channelId);
@@ -899,8 +1007,21 @@
 
             openConfirmModal(
                 `Hapus Group ${chName}?`,
-                `Group "${chName}" dan seluruh riwayat pesannya akan dihapus secara permanen dari Firebase untuk semua anggota.`,
+                `Group "${chName}" dan seluruh riwayat pesannya akan dihapus secara permanen.`,
                 async () => {
+                    if (isLocalFallback) {
+                        channels = channels.filter(c => c.id !== channelId);
+                        localMessages = localMessages.filter(m => m.channelId !== channelId);
+                        if (localSyncChannel) localSyncChannel.postMessage({ type: 'SYNC_CHANNELS', payload: channels });
+                        if (activeChannelId === channelId) {
+                            activeChannelId = channels[0].id;
+                            switchChannel(activeChannelId);
+                        }
+                        renderChatList(document.getElementById('chat-search').value);
+                        showToast(`Group "${chName}" berhasil dihapus`, "fa-solid fa-trash-can");
+                        return;
+                    }
+
                     try {
                         await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'chat_channels', channelId));
 
@@ -928,8 +1049,19 @@
                 `Hapus Kontak "${name}"?`,
                 isSelf 
                     ? `Anda akan menghapus profil Anda sendiri dari daftar kontak aktif.` 
-                    : `Kontak "${name}" akan dihapus dari daftar anggota terdaftar di Firebase.`,
+                    : `Kontak "${name}" akan dihapus dari daftar anggota terdaftar.`,
                 async () => {
+                    if (isLocalFallback) {
+                        onlineUsers = onlineUsers.filter(u => u.uid !== uid);
+                        renderMemberList();
+                        showToast(`Kontak "${name}" berhasil dihapus`, "fa-solid fa-user-minus");
+                        if (isSelf) {
+                            userProfile.name = '';
+                            openProfileSwitchModal();
+                        }
+                        return;
+                    }
+
                     try {
                         await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'chat_users', uid));
                         showToast(`Kontak "${name}" berhasil dihapus`, "fa-solid fa-user-minus");
@@ -947,6 +1079,10 @@
 
         function subscribeToChannelMessages(channelId) {
             if (!currentUser) return;
+            if (isLocalFallback) {
+                renderMessages(localMessages.filter(m => m.channelId === channelId));
+                return;
+            }
             if (unsubscribeMessages) {
                 unsubscribeMessages();
             }
@@ -1042,6 +1178,23 @@
             if (!text) return;
 
             input.value = '';
+
+            if (isLocalFallback) {
+                const msgObj = {
+                    id: 'msg-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
+                    channelId: activeChannelId,
+                    text: text,
+                    senderId: currentUser.uid,
+                    senderName: userProfile.name,
+                    senderColor: userProfile.color,
+                    senderPhoto: userProfile.photoURL || '',
+                    createdAtMs: Date.now()
+                };
+                localMessages.push(msgObj);
+                renderMessages(localMessages.filter(m => m.channelId === activeChannelId));
+                if (localSyncChannel) localSyncChannel.postMessage({ type: 'NEW_MESSAGE', payload: msgObj });
+                return;
+            }
 
             try {
                 const messagesCol = collection(db, 'artifacts', appId, 'public', 'data', 'chat_messages');
@@ -1149,11 +1302,32 @@
             const file = event.target.files[0];
             if (!file || !currentUser || !userProfile.name) return;
 
+            const fileText = `📎 Melampirkan file: ${file.name} (${Math.max(1, Math.round(file.size / 1024))} KB)`;
+
+            if (isLocalFallback) {
+                const msgObj = {
+                    id: 'msg-' + Date.now(),
+                    channelId: activeChannelId,
+                    text: fileText,
+                    senderId: currentUser.uid,
+                    senderName: userProfile.name,
+                    senderColor: userProfile.color,
+                    senderPhoto: userProfile.photoURL || '',
+                    createdAtMs: Date.now()
+                };
+                localMessages.push(msgObj);
+                renderMessages(localMessages.filter(m => m.channelId === activeChannelId));
+                if (localSyncChannel) localSyncChannel.postMessage({ type: 'NEW_MESSAGE', payload: msgObj });
+                showToast(`File "${file.name}" dibagikan ke channel`, 'fa-solid fa-paperclip');
+                event.target.value = '';
+                return;
+            }
+
             try {
                 const messagesCol = collection(db, 'artifacts', appId, 'public', 'data', 'chat_messages');
                 await addDoc(messagesCol, {
                     channelId: activeChannelId,
-                    text: `📎 Melampirkan file: ${file.name} (${Math.max(1, Math.round(file.size / 1024))} KB)`,
+                    text: fileText,
                     senderId: currentUser.uid,
                     senderName: userProfile.name,
                     senderColor: userProfile.color,
