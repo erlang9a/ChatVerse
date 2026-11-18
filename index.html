@@ -163,7 +163,10 @@
                         <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full"></span>
                     </div>
                     <div class="min-w-0">
-                        <h4 id="sidebar-user-name" class="font-semibold text-xs truncate">Tamu</h4>
+                        <div class="flex items-center space-x-1.5">
+                            <h4 id="sidebar-user-name" class="font-semibold text-xs truncate">Tamu</h4>
+                            <span id="sidebar-user-code" class="px-1.5 py-0.5 bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 font-mono text-[9px] rounded-md font-bold" title="Kode Unik Anda">#----</span>
+                        </div>
                         <p id="sidebar-user-id" class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Belum login</p>
                     </div>
                 </div>
@@ -283,7 +286,13 @@
                 </div>
             </div>
             <div class="p-3.5 flex-1 overflow-y-auto">
-                <h5 id="online-members-header" class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2.5">Anggota / Kontak (0)</h5>
+                <div class="flex items-center justify-between mb-2.5">
+                    <h5 id="online-members-header" class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Anggota / Kontak (0)</h5>
+                    <button onclick="openAddByCodeModal()" class="px-2 py-1 bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50 text-brand-700 dark:text-brand-300 rounded-lg text-[10px] font-semibold flex items-center space-x-1 transition">
+                        <i class="fa-solid fa-key text-[9px]"></i>
+                        <span>Tambah via Kode</span>
+                    </button>
+                </div>
                 <div id="member-list" class="space-y-2">
                     <!-- Real-time users populated here -->
                 </div>
@@ -342,6 +351,41 @@
                     <div class="flex justify-end space-x-2 pt-1">
                         <button type="button" onclick="closeRenameChannelModal()" class="px-3.5 py-2 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Batal</button>
                         <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold shadow-md transition">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Contact by Unique Code Modal -->
+        <div id="add-by-code-modal" class="absolute inset-0 z-50 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center p-4">
+            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl w-full p-5 shadow-2xl">
+                <div class="flex items-center justify-between mb-3.5">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 rounded-xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-key"></i>
+                        </div>
+                        <h3 class="font-bold text-base">Tambah Kontak via Kode</h3>
+                    </div>
+                    <button onclick="closeAddByCodeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                        <i class="fa-solid fa-xmark text-base"></i>
+                    </button>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Masukkan 4 atau 5 digit kode unik temanmu untuk menemukannya.</p>
+                <form onsubmit="handleAddByCode(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Kode Unik Teman</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-hashtag absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" id="target-invite-code" required maxlength="6" placeholder="Contoh: 0042 atau 10002"
+                                class="w-full pl-9 pr-3 py-2.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        </div>
+                    </div>
+                    <div class="flex justify-end space-x-2 pt-1">
+                        <button type="button" onclick="closeAddByCodeModal()" class="px-3.5 py-2 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Batal</button>
+                        <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold shadow-md transition flex items-center space-x-1.5">
+                            <i class="fa-solid fa-user-plus text-xs"></i>
+                            <span>Cari & Hubungkan</span>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -450,7 +494,8 @@
         let userProfile = {
             name: '',
             color: '16a34a',
-            photoURL: ''
+            photoURL: '',
+            inviteCode: ''
         };
         let activeChannelId = 'general';
         let unsubscribeMessages = null;
@@ -545,6 +590,100 @@
             btnEl.classList.add('ring-2', 'ring-offset-2', 'ring-brand-500', 'dark:ring-offset-slate-800', 'scale-110');
         };
 
+        // Helper to generate Avatar URL
+        function getAvatarUrl(name, color, photoURL) {
+            if (photoURL) return photoURL;
+            const letter = (name || 'U').trim().substring(0, 1).toUpperCase();
+            return `https://placehold.co/100x100/${color || '16a34a'}/ffffff?text=${encodeURIComponent(letter)}`;
+        }
+
+        // Generate or Fetch Unique Invite Code (Random 4 digits -> Random 5 digits past 9999)
+        async function getOrCreateUniqueCode() {
+            if (userProfile.inviteCode) return userProfile.inviteCode;
+
+            const generateRandomAvailableCode = (usedSet) => {
+                // If fewer than 9,999 codes are taken, generate a random 4-digit code (0001 - 9999)
+                if (usedSet.size < 9999) {
+                    let candidate = '';
+                    let attempts = 0;
+                    do {
+                        const rnd = Math.floor(1 + Math.random() * 9999);
+                        candidate = String(rnd).padStart(4, '0');
+                        attempts++;
+                    } while (usedSet.has(candidate) && attempts < 20000);
+
+                    if (!usedSet.has(candidate)) return candidate;
+                    for (let i = 1; i <= 9999; i++) {
+                        const fallback = String(i).padStart(4, '0');
+                        if (!usedSet.has(fallback)) return fallback;
+                    }
+                }
+
+                // Automatically scale to random 5-digit codes (10000 - 99999) once 4-digit pool is full
+                let candidate5 = '';
+                let attempts5 = 0;
+                do {
+                    const rnd5 = Math.floor(10000 + Math.random() * 90000);
+                    candidate5 = String(rnd5);
+                    attempts5++;
+                } while (usedSet.has(candidate5) && attempts5 < 50000);
+
+                return candidate5 || String(Math.floor(10000 + Math.random() * 90000));
+            };
+
+            if (isLocalFallback) {
+                const usedCodes = new Set(JSON.parse(localStorage.getItem('chatverse_used_codes') || '[]'));
+                onlineUsers.forEach(u => { if (u.inviteCode) usedCodes.add(String(u.inviteCode)); });
+
+                const code = generateRandomAvailableCode(usedCodes);
+                usedCodes.add(code);
+                localStorage.setItem('chatverse_used_codes', JSON.stringify([...usedCodes]));
+                userProfile.inviteCode = code;
+                return userProfile.inviteCode;
+            }
+
+            try {
+                const usersSnap = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'chat_users'));
+                const usedCodes = new Set();
+                usersSnap.forEach(d => {
+                    const existing = d.data().inviteCode;
+                    if (existing) usedCodes.add(String(existing));
+                });
+
+                userProfile.inviteCode = generateRandomAvailableCode(usedCodes);
+                return userProfile.inviteCode;
+            } catch (err) {
+                console.warn("Error generating random code from Firestore, using random fallback:", err);
+                const rnd = Math.floor(1 + Math.random() * 9999);
+                userProfile.inviteCode = String(rnd).padStart(4, '0');
+                return userProfile.inviteCode;
+            }
+        }
+
+        // Update Sidebar User Profile UI
+        function updateSidebarUserUI() {
+            const avatarEl = document.getElementById('sidebar-user-avatar');
+            const nameEl = document.getElementById('sidebar-user-name');
+            const codeEl = document.getElementById('sidebar-user-id');
+            const codeBadgeEl = document.getElementById('sidebar-user-code');
+
+            if (avatarEl) avatarEl.src = getAvatarUrl(userProfile.name, userProfile.color, userProfile.photoURL);
+            if (nameEl) nameEl.innerText = userProfile.name || 'Tamu';
+            if (codeEl && currentUser) codeEl.innerText = `ID: ${currentUser.uid.substring(0, 8)}...`;
+            if (codeBadgeEl) codeBadgeEl.innerText = `#${userProfile.inviteCode || '----'}`;
+        }
+
+        // Open Profile Switch Modal
+        window.openProfileSwitchModal = function() {
+            closeAllDrawers();
+            const authModal = document.getElementById('auth-modal');
+            const nameInput = document.getElementById('setup-name');
+            if (nameInput && userProfile.name) {
+                nameInput.value = userProfile.name;
+            }
+            authModal.classList.remove('hidden');
+        };
+
         // Handle Profile Form Submit (Join Chat)
         window.handleJoinChat = async function(event) {
             event.preventDefault();
@@ -561,6 +700,7 @@
 
             userProfile.name = nameInput;
             userProfile.photoURL = '';
+            await getOrCreateUniqueCode();
 
             try {
                 await registerUserPresence();
@@ -570,44 +710,13 @@
                 listenToUsers();
                 switchChannel(activeChannelId);
                 const modeLabel = isLocalFallback ? ' (Mode Browser Lokal)' : '';
-                showToast(`Selamat datang, ${userProfile.name}!${modeLabel}`, 'fa-solid fa-hand-sparkles');
+                showToast(`Selamat datang, ${userProfile.name}! Kode Unik: #${userProfile.inviteCode}${modeLabel}`, 'fa-solid fa-hand-sparkles');
             } catch (err) {
                 console.error("Join chat error:", err);
                 showToast("Terjadi kendala saat masuk", "fa-solid fa-triangle-exclamation");
             } finally {
                 joinBtn.disabled = false;
                 joinBtn.innerHTML = `<span>Masuk Ruang Chat</span> <i class="fa-solid fa-arrow-right"></i>`;
-            }
-        };
-
-        // Helper: Generate Avatar URL
-        function getAvatarUrl(name, color, photoURL) {
-            if (photoURL) return photoURL;
-            const bgColor = (color || '16a34a').replace('#', '');
-            const initials = (name || 'U').trim().substring(0, 2).toUpperCase();
-            return `https://placehold.co/100x100/${bgColor}/ffffff?text=${encodeURIComponent(initials)}`;
-        }
-
-        // Update Sidebar User Profile UI
-        function updateSidebarUserUI() {
-            const avatarEl = document.getElementById('sidebar-user-avatar');
-            const nameEl = document.getElementById('sidebar-user-name');
-            const idEl = document.getElementById('sidebar-user-id');
-
-            if (avatarEl) avatarEl.src = getAvatarUrl(userProfile.name, userProfile.color, userProfile.photoURL);
-            if (nameEl) nameEl.innerText = userProfile.name || 'Tamu';
-            if (idEl && currentUser) idEl.innerText = `ID: ${currentUser.uid.substring(0, 8)}...`;
-        }
-
-        // Open Profile Switch Modal
-        window.openProfileSwitchModal = function() {
-            closeAllDrawers();
-            const modal = document.getElementById('auth-modal');
-            modal.classList.remove('hidden');
-            const nameInput = document.getElementById('setup-name');
-            if (nameInput) {
-                nameInput.value = userProfile.name || '';
-                nameInput.focus();
             }
         };
 
@@ -619,6 +728,7 @@
                 name: userProfile.name,
                 color: userProfile.color,
                 photoURL: userProfile.photoURL || '',
+                inviteCode: userProfile.inviteCode || '0001',
                 lastActive: Date.now()
             };
 
@@ -733,6 +843,7 @@
             onlineUsers.forEach(u => {
                 const isMe = currentUser && u.uid === currentUser.uid;
                 const avatarSrc = getAvatarUrl(u.name, u.color, u.photoURL);
+                const codeStr = u.inviteCode ? `#${u.inviteCode}` : '#----';
                 const item = document.createElement('div');
                 item.className = 'flex items-center justify-between group p-1.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/40 transition';
                 item.innerHTML = `
@@ -742,10 +853,11 @@
                             <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full"></span>
                         </div>
                         <div class="min-w-0">
-                            <p class="text-sm font-medium truncate">
-                                ${escapeHtml(u.name)} ${isMe ? '<span class="text-[11px] text-brand-500 font-semibold">(Kamu)</span>' : ''}
-                            </p>
-                            <p class="text-[11px] text-emerald-500">Online</p>
+                            <div class="flex items-center space-x-1">
+                                <p class="text-sm font-medium truncate">${escapeHtml(u.name)}</p>
+                                <span class="px-1 py-0.2 bg-slate-100 dark:bg-slate-700 text-[9px] font-mono rounded text-slate-500 dark:text-slate-400 font-semibold">${codeStr}</span>
+                            </div>
+                            <p class="text-[11px] text-emerald-500">${isMe ? '<span class="text-brand-500 font-semibold">Kamu</span> • ' : ''}Online</p>
                         </div>
                     </div>
                     <button type="button" onclick="confirmDeleteContact('${u.uid}', '${escapeHtml(u.name).replace(/'/g, "\\'")}')" 
@@ -757,6 +869,35 @@
                 list.appendChild(item);
             });
         }
+
+        window.openAddByCodeModal = function() {
+            const modal = document.getElementById('add-by-code-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('target-invite-code').value = '';
+            document.getElementById('target-invite-code').focus();
+        };
+
+        window.closeAddByCodeModal = function() {
+            const modal = document.getElementById('add-by-code-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.handleAddByCode = function(event) {
+            event.preventDefault();
+            const codeInput = document.getElementById('target-invite-code').value.trim().replace('#', '');
+            if (!codeInput) return;
+
+            const foundUser = onlineUsers.find(u => u.inviteCode === codeInput);
+            closeAddByCodeModal();
+
+            if (foundUser) {
+                showToast(`Kontak ditemukan: ${foundUser.name} (#${foundUser.inviteCode})!`, 'fa-solid fa-circle-check');
+            } else {
+                showToast(`Kontak dengan kode #${codeInput} tidak ditemukan dalam daftar aktif.`, 'fa-solid fa-triangle-exclamation');
+            }
+        };
 
         // Render Channel List
         window.renderChatList = function(filterText = '') {
