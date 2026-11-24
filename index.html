@@ -24,7 +24,7 @@
             }
         }
     </script>
-    <!-- FontAwesome for Icons -->
+    <!-- FontAwesome 6.4.0 Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -55,394 +55,404 @@
 </head>
 <body class="h-[100dvh] w-full bg-slate-200 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-200 overflow-hidden flex items-center justify-center sm:p-4">
 
-    <!-- Smartphone 9:16 Container Frame -->
+    <!-- Responsive Smartphone 9:16 Container Frame -->
     <div id="phone-frame" class="relative w-full h-full sm:w-[400px] sm:h-[92dvh] sm:max-h-[840px] sm:aspect-[9/16] bg-white dark:bg-slate-900 sm:rounded-[2.5rem] sm:border-[8px] sm:border-slate-800 dark:sm:border-slate-800 sm:shadow-2xl overflow-hidden flex flex-col">
 
-    <!-- Login / Profile Setup Modal -->
-    <div id="auth-modal" class="absolute inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
-        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl w-full p-5 shadow-2xl transform transition-all">
-            <div class="text-center mb-5">
-                <div class="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white text-xl shadow-lg shadow-brand-500/30 mb-3">
-                    <i class="fa-solid fa-comments"></i>
-                </div>
-                <h2 class="text-xl font-bold tracking-tight">Gabung ke ChatVerse</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Atur profil singkatmu untuk mulai mengobrol secara real-time.</p>
-            </div>
-
-            <form id="profile-form" class="space-y-4">
-                <!-- Display Name Input -->
-                <div>
-                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Nama Panggilan (Nickname)</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                        <input type="text" id="setup-name" required maxlength="24" placeholder="Contoh: Budi Santoso"
-                            class="w-full pl-9 pr-3 py-2.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition">
-                    </div>
-                </div>
-
-                <!-- Avatar Color Picker -->
-                <div>
-                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Pilih Warna Avatar</label>
-                    <div class="flex items-center justify-between gap-2" id="color-picker-group">
-                        <button type="button" data-color="16a34a" class="color-btn w-9 h-9 rounded-full bg-[#16a34a] ring-2 ring-offset-2 ring-brand-500 dark:ring-offset-slate-800 transition transform scale-110"></button>
-                        <button type="button" data-color="3b82f6" class="color-btn w-9 h-9 rounded-full bg-[#3b82f6] opacity-75 hover:opacity-100 transition"></button>
-                        <button type="button" data-color="8b5cf6" class="color-btn w-9 h-9 rounded-full bg-[#8b5cf6] opacity-75 hover:opacity-100 transition"></button>
-                        <button type="button" data-color="ec4899" class="color-btn w-9 h-9 rounded-full bg-[#ec4899] opacity-75 hover:opacity-100 transition"></button>
-                        <button type="button" data-color="f59e0b" class="color-btn w-9 h-9 rounded-full bg-[#f59e0b] opacity-75 hover:opacity-100 transition"></button>
-                        <button type="button" data-color="06b6d4" class="color-btn w-9 h-9 rounded-full bg-[#06b6d4] opacity-75 hover:opacity-100 transition"></button>
-                    </div>
-                </div>
-
-                <button type="submit" id="join-btn" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl shadow-lg shadow-brand-500/25 transition flex items-center justify-center space-x-2 text-sm">
-                    <span>Masuk Ruang Chat</span>
-                    <i class="fa-solid fa-arrow-right"></i>
-                </button>
-            </form>
-
-            <!-- Info note -->
-            <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700 text-center">
-                <p class="text-[11px] text-slate-400 dark:text-slate-500 flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-shield-halved text-brand-500"></i>
-                    <span>Terhubung real-time & sinkron otomatis</span>
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- App Wrapper -->
-    <div id="app" class="flex h-full w-full relative overflow-hidden">
-
-        <!-- Mobile/Drawer Overlay -->
-        <div id="mobile-overlay" class="absolute inset-0 bg-black/50 z-20 hidden transition-opacity"></div>
-
-        <!-- Left Sidebar Drawer (Channels) -->
-        <aside id="sidebar" class="absolute z-30 inset-y-0 left-0 w-[82%] max-w-[300px] bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col transition-transform duration-300 -translate-x-full shadow-2xl">
-            
-            <!-- Sidebar Header -->
-            <div class="p-3.5 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
-                <div class="flex items-center space-x-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white font-bold text-base shadow-md shadow-brand-500/20">
+        <!-- Profile Setup Modal -->
+        <div id="auth-modal" class="absolute inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
+            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl w-full p-5 shadow-2xl transform transition-all">
+                <div class="text-center mb-5">
+                    <div class="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white text-xl shadow-lg shadow-brand-500/30 mb-3">
                         <i class="fa-solid fa-comments"></i>
                     </div>
+                    <h2 class="text-xl font-bold tracking-tight">Gabung ke ChatVerse</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Atur profil singkatmu untuk mulai mengobrol secara real-time.</p>
+                </div>
+
+                <form id="profile-form" class="space-y-4">
+                    <!-- Display Name Input -->
                     <div>
-                        <h1 class="font-bold text-base tracking-tight">ChatVerse</h1>
-                        <span class="inline-flex items-center text-[11px] text-emerald-500 font-medium">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse mr-1.5"></span>
-                            <span id="online-count-badge">Menghubungkan...</span>
-                        </span>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-0.5">
-                    <button type="button" id="btn-toggle-sound" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="Suara Notifikasi">
-                        <i id="sound-icon" class="fa-solid fa-volume-high text-xs"></i>
-                    </button>
-                    <button type="button" id="btn-toggle-theme" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="Ganti Tema">
-                        <i id="theme-icon" class="fa-solid fa-moon text-sm"></i>
-                    </button>
-                    <button type="button" id="btn-close-sidebar" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
-                        <i class="fa-solid fa-xmark text-base"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Search Bar -->
-            <div class="p-3 border-b border-slate-200 dark:border-slate-700">
-                <div class="flex items-center space-x-2">
-                    <div class="relative flex-1">
-                        <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                        <input type="text" id="chat-search" placeholder="Cari group..." 
-                            class="w-full pl-8 pr-3 py-2 bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition">
-                    </div>
-                    <button type="button" id="btn-open-create-channel" class="p-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl shadow-sm transition flex-shrink-0" title="Buat Group Baru">
-                        <i class="fa-solid fa-plus text-xs"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Chat & Channel List -->
-            <div id="chat-list" class="flex-1 overflow-y-auto p-2.5 space-y-1">
-                <!-- Dynamically populated via JS -->
-            </div>
-
-            <!-- User Profile Footer -->
-            <div class="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
-                <div class="flex items-center space-x-2.5 min-w-0">
-                    <div class="relative flex-shrink-0">
-                        <img id="sidebar-user-avatar" src="https://placehold.co/100x100/16a34a/ffffff?text=U" alt="Avatar" class="w-9 h-9 rounded-full object-cover border-2 border-brand-500">
-                        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full"></span>
-                    </div>
-                    <div class="min-w-0">
-                        <div class="flex items-center space-x-1.5">
-                            <h4 id="sidebar-user-name" class="font-semibold text-xs truncate">Tamu</h4>
-                            <button type="button" id="sidebar-user-code" class="px-1.5 py-0.5 bg-brand-100 dark:bg-brand-900/40 hover:bg-brand-200 dark:hover:bg-brand-900/60 text-brand-700 dark:text-brand-300 font-mono text-[9px] rounded-md font-bold transition cursor-pointer" title="Klik untuk salin kode unik Anda">#----</button>
-                        </div>
-                        <p id="sidebar-user-id" class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Belum login</p>
-                    </div>
-                </div>
-                <button type="button" id="btn-switch-profile" class="p-2 text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 transition rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-700/50" title="Ganti Profil / Keluar">
-                    <i class="fa-solid fa-right-from-bracket text-sm"></i>
-                </button>
-            </div>
-        </aside>
-
-        <!-- Main Chat Area -->
-        <main class="flex-1 flex flex-col h-full w-full bg-white dark:bg-slate-900 relative">
-            
-            <!-- Chat Header -->
-            <header class="h-14 px-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between bg-white/90 dark:bg-slate-900/90 backdrop-blur-md z-10 flex-shrink-0">
-                <div class="flex items-center space-x-2 min-w-0">
-                    <button type="button" id="btn-open-sidebar" class="relative p-2 -ml-1 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition" title="Daftar Group">
-                        <i class="fa-solid fa-bars text-base"></i>
-                        <span id="sidebar-unread-dot" class="hidden absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-500 ring-2 ring-white dark:ring-slate-900"></span>
-                    </button>
-                    <div class="relative flex-shrink-0">
-                        <img id="current-chat-avatar" src="https://placehold.co/100x100/16a34a/ffffff?text=G" alt="Avatar" class="w-9 h-9 rounded-full object-cover">
-                        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full"></span>
-                    </div>
-                    <div class="min-w-0">
-                        <div class="flex items-center space-x-1">
-                            <h2 id="current-chat-title" class="font-bold text-sm truncate">#general</h2>
-                            <button type="button" id="btn-header-rename" class="p-1 text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 rounded transition flex-shrink-0" title="Ubah Nama Group">
-                                <i class="fa-solid fa-pen text-[10px]"></i>
-                            </button>
-                        </div>
-                        <p id="current-chat-subtitle" class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Ruang diskusi umum</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-1 flex-shrink-0">
-                    <button type="button" id="btn-header-invite" class="p-2 bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50 text-brand-700 dark:text-brand-300 rounded-xl text-xs font-semibold transition" title="Salin Link Undangan">
-                        <i class="fa-solid fa-user-plus"></i>
-                    </button>
-                    <button type="button" id="header-delete-channel-btn" class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition" title="Hapus Group Ini">
-                        <i class="fa-solid fa-trash-can text-sm"></i>
-                    </button>
-                    <button type="button" id="btn-open-info" class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition" title="Info Group & Kontak">
-                        <i class="fa-solid fa-users text-sm"></i>
-                    </button>
-                </div>
-            </header>
-
-            <!-- Messages Container -->
-            <div id="messages-container" class="flex-1 overflow-y-auto p-3.5 space-y-1.5 bg-slate-50/60 dark:bg-slate-900/60 scroll-smooth">
-                <div class="flex flex-col items-center justify-center h-full text-slate-400 text-xs">
-                    <i class="fa-solid fa-circle-notch fa-spin text-xl text-brand-500 mb-2"></i>
-                    <p>Memuat percakapan real-time...</p>
-                </div>
-            </div>
-
-            <!-- Input Area -->
-            <div class="border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 relative flex-shrink-0">
-                
-                <!-- Reply Quote Preview Bar -->
-                <div id="reply-preview-bar" class="hidden px-3.5 py-2 bg-slate-50 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between gap-2">
-                    <div class="border-l-2 border-brand-500 pl-2.5 min-w-0 flex-1">
-                        <p id="reply-preview-sender" class="text-[11px] font-semibold text-brand-600 dark:text-brand-400 truncate">Membalas Nama</p>
-                        <p id="reply-preview-text" class="text-xs text-slate-500 dark:text-slate-400 truncate">Cuplikan pesan...</p>
-                    </div>
-                    <button type="button" id="btn-cancel-reply" class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg transition" title="Batal Balas">
-                        <i class="fa-solid fa-xmark text-xs"></i>
-                    </button>
-                </div>
-
-                <!-- Emoji Picker Popup -->
-                <div id="emoji-picker" class="hidden absolute bottom-16 left-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-2.5 grid grid-cols-6 gap-1.5 z-20 w-60">
-                    <button type="button" data-emoji="😊" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">😊</button>
-                    <button type="button" data-emoji="🚀" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">🚀</button>
-                    <button type="button" data-emoji="🔥" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">🔥</button>
-                    <button type="button" data-emoji="💡" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">💡</button>
-                    <button type="button" data-emoji="❤️" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">❤️</button>
-                    <button type="button" data-emoji="🎉" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">🎉</button>
-                    <button type="button" data-emoji="👍" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">👍</button>
-                    <button type="button" data-emoji="😂" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">😂</button>
-                    <button type="button" data-emoji="✨" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">✨</button>
-                    <button type="button" data-emoji="☕" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">☕</button>
-                    <button type="button" data-emoji="💻" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">💻</button>
-                    <button type="button" data-emoji="🙌" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">🙌</button>
-                </div>
-
-                <div class="p-2.5 flex items-center space-x-1.5">
-                    <button type="button" id="btn-attach" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition flex-shrink-0" title="Lampirkan Gambar / File">
-                        <i class="fa-solid fa-paperclip text-base"></i>
-                    </button>
-                    <button type="button" id="btn-emoji" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition flex-shrink-0" title="Emoji">
-                        <i class="fa-regular fa-face-smile text-base"></i>
-                    </button>
-                    <input type="file" id="file-input" class="hidden">
-                    
-                    <input type="text" id="message-input" placeholder="Ketik pesan..." autocomplete="off"
-                        class="flex-1 min-w-0 px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition">
-                    
-                    <button type="button" id="btn-send" class="bg-brand-600 hover:bg-brand-700 text-white w-10 h-10 rounded-2xl font-medium text-sm shadow-md shadow-brand-500/25 flex items-center justify-center flex-shrink-0 transition transform active:scale-95" title="Kirim">
-                        <i class="fa-solid fa-paper-plane text-xs"></i>
-                    </button>
-                </div>
-            </div>
-        </main>
-
-        <!-- Right Info Sidebar Drawer -->
-        <aside id="info-sidebar" class="hidden absolute z-30 inset-y-0 right-0 w-[82%] max-w-[300px] bg-white dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 flex-col transition-all duration-300 shadow-2xl">
-            <div class="p-3.5 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
-                <h3 class="font-bold text-sm">Info Group & Kontak</h3>
-                <button type="button" id="btn-close-info" class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="p-4 flex flex-col items-center border-b border-slate-200 dark:border-slate-700 text-center">
-                <img id="info-avatar" src="https://placehold.co/100x100/16a34a/ffffff?text=G" class="w-14 h-14 rounded-2xl object-cover mb-2.5 shadow-md" alt="Channel Icon">
-                <h4 id="info-title" class="font-bold text-sm">#general</h4>
-                <p id="info-desc" class="text-xs text-slate-500 dark:text-slate-400 mt-1">Ruang diskusi umum untuk semua anggota.</p>
-                <div class="mt-3 w-full space-y-1.5">
-                    <button type="button" id="btn-info-rename" class="w-full py-2 px-3 bg-brand-50 dark:bg-brand-900/20 hover:bg-brand-100 dark:hover:bg-brand-900/40 text-brand-700 dark:text-brand-300 rounded-xl text-xs font-medium flex items-center justify-center space-x-2 transition">
-                        <i class="fa-solid fa-pen-to-square"></i>
-                        <span>Ubah Nama Group</span>
-                    </button>
-                    <button type="button" id="btn-info-invite" class="w-full py-2 px-3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl text-xs font-medium flex items-center justify-center space-x-2 transition">
-                        <i class="fa-solid fa-link text-brand-500"></i>
-                        <span>Salin Link Ruang Chat</span>
-                    </button>
-                    <button type="button" id="sidebar-delete-channel-btn" class="w-full py-2 px-3 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 rounded-xl text-xs font-medium flex items-center justify-center space-x-2 transition">
-                        <i class="fa-solid fa-trash-can"></i>
-                        <span>Hapus Group Ini</span>
-                    </button>
-                </div>
-            </div>
-            <div class="p-3.5 flex-1 overflow-y-auto">
-                <div class="flex items-center justify-between mb-2.5">
-                    <h5 id="online-members-header" class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Anggota / Kontak (0)</h5>
-                    <button type="button" id="btn-open-add-code" class="px-2 py-1 bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50 text-brand-700 dark:text-brand-300 rounded-lg text-[10px] font-semibold flex items-center space-x-1 transition">
-                        <i class="fa-solid fa-key text-[9px]"></i>
-                        <span>Tambah via Kode</span>
-                    </button>
-                </div>
-                <div id="member-list" class="space-y-1.5">
-                    <!-- Real-time users populated here -->
-                </div>
-            </div>
-        </aside>
-
-        <!-- Create Channel Modal -->
-        <div id="create-channel-modal" class="modal-backdrop absolute inset-0 z-50 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center p-4">
-            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl w-full p-5 shadow-2xl">
-                <div class="flex items-center justify-between mb-3.5">
-                    <h3 class="font-bold text-base">Buat Group Baru</h3>
-                    <button type="button" data-close-modal="create-channel-modal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                        <i class="fa-solid fa-xmark text-base"></i>
-                    </button>
-                </div>
-                <form id="create-channel-form" class="space-y-3.5">
-                    <div>
-                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Nama Group</label>
-                        <input type="text" id="new-channel-name" required maxlength="24" placeholder="Contoh: proyek-web"
-                            class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Deskripsi Singkat</label>
-                        <input type="text" id="new-channel-desc" maxlength="60" placeholder="Diskusi seputar tim & proyek..."
-                            class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                    </div>
-                    <div class="flex justify-end space-x-2 pt-1">
-                        <button type="button" data-close-modal="create-channel-modal" class="px-3.5 py-2 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold shadow-md transition">Buat Group</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Rename Channel Modal -->
-        <div id="rename-channel-modal" class="modal-backdrop absolute inset-0 z-50 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center p-4">
-            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl w-full p-5 shadow-2xl">
-                <div class="flex items-center justify-between mb-3.5">
-                    <h3 class="font-bold text-base">Ubah Nama Group</h3>
-                    <button type="button" data-close-modal="rename-channel-modal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                        <i class="fa-solid fa-xmark text-base"></i>
-                    </button>
-                </div>
-                <form id="rename-channel-form" class="space-y-3.5">
-                    <input type="hidden" id="rename-channel-id">
-                    <div>
-                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Nama Group Baru</label>
-                        <input type="text" id="rename-channel-name" required maxlength="24" placeholder="Contoh: tim-desain"
-                            class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Deskripsi Group</label>
-                        <input type="text" id="rename-channel-desc" maxlength="60" placeholder="Deskripsi group..."
-                            class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                    </div>
-                    <div class="flex justify-end space-x-2 pt-1">
-                        <button type="button" data-close-modal="rename-channel-modal" class="px-3.5 py-2 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold shadow-md transition">Simpan Perubahan</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Add Contact by Unique Code Modal -->
-        <div id="add-by-code-modal" class="modal-backdrop absolute inset-0 z-50 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center p-4">
-            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl w-full p-5 shadow-2xl">
-                <div class="flex items-center justify-between mb-3.5">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 rounded-xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 flex items-center justify-center text-sm">
-                            <i class="fa-solid fa-key"></i>
-                        </div>
-                        <h3 class="font-bold text-base">Tambah Kontak via Kode</h3>
-                    </div>
-                    <button type="button" data-close-modal="add-by-code-modal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                        <i class="fa-solid fa-xmark text-base"></i>
-                    </button>
-                </div>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Masukkan 4 atau 5 digit kode unik temanmu untuk menemukannya.</p>
-                <form id="add-by-code-form" class="space-y-4">
-                    <div>
-                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Kode Unik Teman</label>
+                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Nama Panggilan (Nickname)</label>
                         <div class="relative">
-                            <i class="fa-solid fa-hashtag absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                            <input type="text" id="target-invite-code" required maxlength="6" placeholder="Contoh: 0042 atau 10002"
-                                class="w-full pl-9 pr-3 py-2.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" id="setup-name" required maxlength="24" placeholder="Contoh: Budi Santoso"
+                                class="w-full pl-9 pr-3 py-2.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition">
                         </div>
                     </div>
-                    <div class="flex justify-end space-x-2 pt-1">
-                        <button type="button" data-close-modal="add-by-code-modal" class="px-3.5 py-2 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold shadow-md transition flex items-center space-x-1.5">
-                            <i class="fa-solid fa-user-plus text-xs"></i>
-                            <span>Cari & Hubungkan</span>
+
+                    <!-- Avatar Color Picker -->
+                    <div>
+                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Pilih Warna Avatar</label>
+                        <div class="flex items-center justify-between gap-2" id="color-picker-group">
+                            <button type="button" data-color="16a34a" class="color-btn w-9 h-9 rounded-full bg-[#16a34a] ring-2 ring-offset-2 ring-brand-500 dark:ring-offset-slate-800 transition transform scale-110"></button>
+                            <button type="button" data-color="3b82f6" class="color-btn w-9 h-9 rounded-full bg-[#3b82f6] opacity-75 hover:opacity-100 transition"></button>
+                            <button type="button" data-color="8b5cf6" class="color-btn w-9 h-9 rounded-full bg-[#8b5cf6] opacity-75 hover:opacity-100 transition"></button>
+                            <button type="button" data-color="ec4899" class="color-btn w-9 h-9 rounded-full bg-[#ec4899] opacity-75 hover:opacity-100 transition"></button>
+                            <button type="button" data-color="f59e0b" class="color-btn w-9 h-9 rounded-full bg-[#f59e0b] opacity-75 hover:opacity-100 transition"></button>
+                            <button type="button" data-color="06b6d4" class="color-btn w-9 h-9 rounded-full bg-[#06b6d4] opacity-75 hover:opacity-100 transition"></button>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="join-btn" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl shadow-lg shadow-brand-500/25 transition flex items-center justify-center space-x-2 text-sm">
+                        <span>Masuk Ruang Chat</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+
+                <!-- Info Note -->
+                <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700 text-center">
+                    <p class="text-[11px] text-slate-400 dark:text-slate-500 flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-shield-halved text-brand-500"></i>
+                        <span>Grup & Chat Personal 1-on-1 real-time</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App Wrapper -->
+        <div id="app" class="flex h-full w-full relative overflow-hidden">
+
+            <!-- Mobile / Drawer Backdrop Overlay -->
+            <div id="mobile-overlay" class="absolute inset-0 bg-black/50 z-20 hidden transition-opacity"></div>
+
+            <!-- Left Sidebar Drawer (Channels & Personal DMs) -->
+            <aside id="sidebar" class="absolute z-30 inset-y-0 left-0 w-[82%] max-w-[300px] bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col transition-transform duration-300 -translate-x-full shadow-2xl">
+                
+                <!-- Sidebar Header -->
+                <div class="p-3.5 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                    <div class="flex items-center space-x-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white font-bold text-base shadow-md shadow-brand-500/20">
+                            <i class="fa-solid fa-comments"></i>
+                        </div>
+                        <div>
+                            <h1 class="font-bold text-base tracking-tight">ChatVerse</h1>
+                            <span class="inline-flex items-center text-[11px] text-emerald-500 font-medium">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse mr-1.5"></span>
+                                <span id="online-count-badge">Menghubungkan...</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-0.5">
+                        <button type="button" id="btn-toggle-sound" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="Suara Notifikasi">
+                            <i id="sound-icon" class="fa-solid fa-volume-high text-xs"></i>
+                        </button>
+                        <button type="button" id="btn-toggle-theme" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="Ganti Tema">
+                            <i id="theme-icon" class="fa-solid fa-moon text-sm"></i>
+                        </button>
+                        <button type="button" id="btn-close-sidebar" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="Tutup Menu">
+                            <i class="fa-solid fa-xmark text-base"></i>
                         </button>
                     </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Custom Confirmation Modal -->
-        <div id="confirm-modal" class="modal-backdrop absolute inset-0 z-50 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center p-4">
-            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl w-full p-5 shadow-2xl text-center">
-                <div class="w-11 h-11 mx-auto rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 flex items-center justify-center text-lg mb-2.5">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
-                <h3 id="confirm-title" class="font-bold text-base">Konfirmasi Hapus</h3>
-                <p id="confirm-message" class="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">Apakah Anda yakin ingin menghapus item ini?</p>
-                <div class="flex items-center justify-center space-x-2.5 mt-5">
-                    <button type="button" data-close-modal="confirm-modal" class="flex-1 py-2.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition">Batal</button>
-                    <button type="button" id="confirm-action-btn" class="flex-1 py-2.5 rounded-xl text-xs font-semibold bg-red-600 hover:bg-red-700 text-white shadow-md shadow-red-500/20 transition">Ya, Hapus</button>
+
+                <!-- Search Bar -->
+                <div class="p-3 border-b border-slate-200 dark:border-slate-700">
+                    <div class="relative">
+                        <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="chat-search" placeholder="Cari grup atau kontak DM..." 
+                            class="w-full pl-8 pr-3 py-2 bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition">
+                    </div>
+                </div>
+
+                <!-- Chat, Channel & Personal DM List -->
+                <div id="chat-list" class="flex-1 overflow-y-auto p-2.5 space-y-3">
+                    <!-- Dynamically populated via JS -->
+                </div>
+
+                <!-- User Profile Footer -->
+                <div class="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
+                    <div class="flex items-center space-x-2.5 min-w-0">
+                        <div class="relative flex-shrink-0">
+                            <img id="sidebar-user-avatar" src="https://placehold.co/100x100/16a34a/ffffff?text=U" alt="Avatar" class="w-9 h-9 rounded-full object-cover border-2 border-brand-500">
+                            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full"></span>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center space-x-1.5">
+                                <h4 id="sidebar-user-name" class="font-semibold text-xs truncate">Tamu</h4>
+                                <button type="button" id="sidebar-user-code" class="px-1.5 py-0.5 bg-brand-100 dark:bg-brand-900/40 hover:bg-brand-200 dark:hover:bg-brand-900/60 text-brand-700 dark:text-brand-300 font-mono text-[9px] rounded-md font-bold transition cursor-pointer" title="Klik untuk salin kode unik Anda">#----</button>
+                            </div>
+                            <p id="sidebar-user-id" class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Belum login</p>
+                        </div>
+                    </div>
+                    <button type="button" id="btn-switch-profile" class="p-2 text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 transition rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-700/50" title="Ubah Profil">
+                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Chat Area -->
+            <main class="flex-1 flex flex-col h-full w-full bg-white dark:bg-slate-900 relative">
+                
+                <!-- Chat Header -->
+                <header class="h-14 px-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between bg-white/90 dark:bg-slate-900/90 backdrop-blur-md z-10 flex-shrink-0">
+                    <div class="flex items-center space-x-2 min-w-0">
+                        <button type="button" id="btn-open-sidebar" class="relative p-2 -ml-1 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition" title="Daftar Grup & Chat Personal">
+                            <i class="fa-solid fa-bars text-base"></i>
+                            <span id="sidebar-unread-dot" class="hidden absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-500 ring-2 ring-white dark:ring-slate-900"></span>
+                        </button>
+                        <div class="relative flex-shrink-0">
+                            <img id="current-chat-avatar" src="https://placehold.co/100x100/3b82f6/ffffff?text=A" alt="Avatar" class="w-9 h-9 rounded-full object-cover">
+                            <span id="current-chat-status-dot" class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full"></span>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center space-x-1.5">
+                                <h2 id="current-chat-title" class="font-bold text-sm truncate">#announcements</h2>
+                                <span id="current-dm-badge" class="hidden px-1.5 py-0.2 bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 font-mono text-[9px] rounded font-semibold">#----</span>
+                                <button type="button" id="btn-header-rename" class="p-1 text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 rounded transition flex-shrink-0" title="Ubah Nama Group">
+                                    <i class="fa-solid fa-pen text-[10px]"></i>
+                                </button>
+                            </div>
+                            <p id="current-chat-subtitle" class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Info penting, pembaruan sistem, & pengumuman</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-0.5 sm:space-x-1 flex-shrink-0">
+                        <button type="button" id="btn-header-new-dm" class="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-brand-50 dark:hover:bg-brand-900/30 text-slate-600 dark:text-slate-300 hover:text-brand-600 rounded-xl text-xs font-semibold transition" title="Chat Personal via Kode">
+                            <i class="fa-solid fa-comment-medical"></i>
+                        </button>
+                        <button type="button" id="btn-header-clear-chat" class="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition" title="Bersihkan Chat">
+                            <i class="fa-solid fa-broom text-xs"></i>
+                        </button>
+                        <button type="button" id="btn-header-invite" class="p-2 bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50 text-brand-700 dark:text-brand-300 rounded-xl text-xs font-semibold transition" title="Salin Link Undangan">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </button>
+                        <button type="button" id="header-delete-channel-btn" class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition" title="Hapus Group Ini">
+                            <i class="fa-solid fa-trash-can text-sm"></i>
+                        </button>
+                        <button type="button" id="btn-open-info" class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition" title="Info & Kontak">
+                            <i class="fa-solid fa-users text-sm"></i>
+                        </button>
+                    </div>
+                </header>
+
+                <!-- Messages Container -->
+                <div id="messages-container" class="flex-1 overflow-y-auto p-3.5 space-y-1.5 bg-slate-50/60 dark:bg-slate-900/60 scroll-smooth">
+                    <div class="flex flex-col items-center justify-center h-full text-slate-400 text-xs">
+                        <i class="fa-solid fa-circle-notch fa-spin text-xl text-brand-500 mb-2"></i>
+                        <p>Memuat percakapan real-time...</p>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 relative flex-shrink-0">
+                    
+                    <!-- Reply Quote Preview Banner -->
+                    <div id="reply-preview-bar" class="hidden px-3.5 py-2 bg-slate-50 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between gap-2">
+                        <div class="border-l-2 border-brand-500 pl-2.5 min-w-0 flex-1">
+                            <p id="reply-preview-sender" class="text-[11px] font-semibold text-brand-600 dark:text-brand-400 truncate">Membalas Nama</p>
+                            <p id="reply-preview-text" class="text-xs text-slate-500 dark:text-slate-400 truncate">Cuplikan pesan...</p>
+                        </div>
+                        <button type="button" id="btn-cancel-reply" class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg transition" title="Batal Balas">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- 12-Emoji Picker Popup -->
+                    <div id="emoji-picker" class="hidden absolute bottom-16 left-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-2.5 grid grid-cols-6 gap-1.5 z-20 w-60">
+                        <button type="button" data-emoji="😊" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">😊</button>
+                        <button type="button" data-emoji="🚀" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">🚀</button>
+                        <button type="button" data-emoji="🔥" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">🔥</button>
+                        <button type="button" data-emoji="💡" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">💡</button>
+                        <button type="button" data-emoji="❤️" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">❤️</button>
+                        <button type="button" data-emoji="🎉" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">🎉</button>
+                        <button type="button" data-emoji="👍" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">👍</button>
+                        <button type="button" data-emoji="😂" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">😂</button>
+                        <button type="button" data-emoji="✨" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">✨</button>
+                        <button type="button" data-emoji="☕" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">☕</button>
+                        <button type="button" data-emoji="💻" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">💻</button>
+                        <button type="button" data-emoji="🙌" class="emoji-item p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-base transition">🙌</button>
+                    </div>
+
+                    <div class="p-2.5 flex items-center space-x-1.5">
+                        <button type="button" id="btn-attach" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition flex-shrink-0" title="Lampirkan Gambar / File">
+                            <i class="fa-solid fa-paperclip text-base"></i>
+                        </button>
+                        <button type="button" id="btn-emoji" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition flex-shrink-0" title="Emoji">
+                            <i class="fa-regular fa-face-smile text-base"></i>
+                        </button>
+                        <input type="file" id="file-input" class="hidden">
+                        
+                        <input type="text" id="message-input" placeholder="Ketik pesan..." autocomplete="off"
+                            class="flex-1 min-w-0 px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition">
+                        
+                        <button type="button" id="btn-send" class="bg-brand-600 hover:bg-brand-700 text-white w-10 h-10 rounded-2xl font-medium text-sm shadow-md shadow-brand-500/25 flex items-center justify-center flex-shrink-0 transition transform active:scale-95" title="Kirim">
+                            <i class="fa-solid fa-paper-plane text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Info Sidebar Drawer -->
+            <aside id="info-sidebar" class="hidden absolute z-30 inset-y-0 right-0 w-[82%] max-w-[300px] bg-white dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 flex-col transition-all duration-300 shadow-2xl">
+                <div class="p-3.5 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                    <h3 id="info-drawer-header" class="font-bold text-sm">Info Group & Kontak</h3>
+                    <button type="button" id="btn-close-info" class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg" title="Tutup Info">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="p-4 flex flex-col items-center border-b border-slate-200 dark:border-slate-700 text-center">
+                    <img id="info-avatar" src="https://placehold.co/100x100/3b82f6/ffffff?text=A" class="w-14 h-14 rounded-2xl object-cover mb-2.5 shadow-md" alt="Channel Icon">
+                    <h4 id="info-title" class="font-bold text-sm">#announcements</h4>
+                    <p id="info-desc" class="text-xs text-slate-500 dark:text-slate-400 mt-1">Info penting, pembaruan sistem, & pengumuman</p>
+                    <div class="mt-3 w-full space-y-1.5">
+                        <button type="button" id="btn-info-rename" class="w-full py-2 px-3 bg-brand-50 dark:bg-brand-900/20 hover:bg-brand-100 dark:hover:bg-brand-900/40 text-brand-700 dark:text-brand-300 rounded-xl text-xs font-medium flex items-center justify-center space-x-2 transition">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <span>Ubah Nama Group</span>
+                        </button>
+                        <button type="button" id="btn-info-invite" class="w-full py-2 px-3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl text-xs font-medium flex items-center justify-center space-x-2 transition">
+                            <i class="fa-solid fa-link text-brand-500"></i>
+                            <span>Salin Link Ruang Chat</span>
+                        </button>
+                        <button type="button" id="btn-info-clear-chat" class="w-full py-2 px-3 bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/40 text-amber-700 dark:text-amber-300 rounded-xl text-xs font-medium flex items-center justify-center space-x-2 transition">
+                            <i class="fa-solid fa-broom"></i>
+                            <span>Bersihkan Riwayat Chat</span>
+                        </button>
+                        <button type="button" id="sidebar-delete-channel-btn" class="w-full py-2 px-3 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 rounded-xl text-xs font-medium flex items-center justify-center space-x-2 transition">
+                            <i class="fa-solid fa-trash-can"></i>
+                            <span>Hapus Group Ini</span>
+                        </button>
+                        <button type="button" id="btn-remove-dm-thread" class="hidden w-full py-2 px-3 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 rounded-xl text-xs font-medium flex items-center justify-center space-x-2 transition">
+                            <i class="fa-solid fa-comment-slash"></i>
+                            <span>Tutup Chat Personal Ini</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-3.5 flex-1 overflow-y-auto">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <h5 id="online-members-header" class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Anggota / Kontak (0)</h5>
+                        <button type="button" id="btn-open-add-code" class="px-2 py-1 bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50 text-brand-700 dark:text-brand-300 rounded-lg text-[10px] font-semibold flex items-center space-x-1 transition">
+                            <i class="fa-solid fa-key text-[9px]"></i>
+                            <span>Chat via Kode</span>
+                        </button>
+                    </div>
+                    <div id="member-list" class="space-y-1.5">
+                        <!-- Real-time users populated here -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Create Group Modal -->
+            <div id="create-channel-modal" class="modal-backdrop absolute inset-0 z-50 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center p-4">
+                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl w-full p-5 shadow-2xl">
+                    <div class="flex items-center justify-between mb-3.5">
+                        <h3 class="font-bold text-base">Buat Group Baru</h3>
+                        <button type="button" data-close-modal="create-channel-modal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                            <i class="fa-solid fa-xmark text-base"></i>
+                        </button>
+                    </div>
+                    <form id="create-channel-form" class="space-y-3.5">
+                        <div>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Nama Group</label>
+                            <input type="text" id="new-channel-name" required maxlength="24" placeholder="Contoh: proyek-web"
+                                class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Deskripsi Singkat</label>
+                            <input type="text" id="new-channel-desc" maxlength="60" placeholder="Diskusi seputar tim & proyek..."
+                                class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        </div>
+                        <div class="flex justify-end space-x-2 pt-1">
+                            <button type="button" data-close-modal="create-channel-modal" class="px-3.5 py-2 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Batal</button>
+                            <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold shadow-md transition">Buat Group</button>
+                        </div>
+                    </form>
                 </div>
             </div>
+
+            <!-- Rename Group Modal -->
+            <div id="rename-channel-modal" class="modal-backdrop absolute inset-0 z-50 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center p-4">
+                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl w-full p-5 shadow-2xl">
+                    <div class="flex items-center justify-between mb-3.5">
+                        <h3 class="font-bold text-base">Ubah Nama Group</h3>
+                        <button type="button" data-close-modal="rename-channel-modal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                            <i class="fa-solid fa-xmark text-base"></i>
+                        </button>
+                    </div>
+                    <form id="rename-channel-form" class="space-y-3.5">
+                        <input type="hidden" id="rename-channel-id">
+                        <div>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Nama Group Baru</label>
+                            <input type="text" id="rename-channel-name" required maxlength="24" placeholder="Contoh: tim-desain"
+                                class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Deskripsi Group</label>
+                            <input type="text" id="rename-channel-desc" maxlength="60" placeholder="Deskripsi group..."
+                                class="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        </div>
+                        <div class="flex justify-end space-x-2 pt-1">
+                            <button type="button" data-close-modal="rename-channel-modal" class="px-3.5 py-2 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Batal</button>
+                            <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold shadow-md transition">Simpan Perubahan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Start Personal Chat by Unique Code Modal -->
+            <div id="add-by-code-modal" class="modal-backdrop absolute inset-0 z-50 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center p-4">
+                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl w-full p-5 shadow-2xl">
+                    <div class="flex items-center justify-between mb-3.5">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 rounded-xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 flex items-center justify-center text-sm">
+                                <i class="fa-solid fa-comment-dots"></i>
+                            </div>
+                            <h3 class="font-bold text-base">Mulai Chat Personal</h3>
+                        </div>
+                        <button type="button" data-close-modal="add-by-code-modal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                            <i class="fa-solid fa-xmark text-base"></i>
+                        </button>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Masukkan kode unik temanmu untuk langsung membuka ruang chat pribadi 1-on-1.</p>
+                    <form id="add-by-code-form" class="space-y-4">
+                        <div>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Kode Unik Teman</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-hashtag absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                <input type="text" id="target-invite-code" required maxlength="6" placeholder="Contoh: 0042 atau 10002"
+                                    class="w-full pl-9 pr-3 py-2.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            </div>
+                        </div>
+                        <div class="flex justify-end space-x-2 pt-1">
+                            <button type="button" data-close-modal="add-by-code-modal" class="px-3.5 py-2 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Batal</button>
+                            <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold shadow-md transition flex items-center space-x-1.5">
+                                <i class="fa-solid fa-paper-plane text-xs"></i>
+                                <span>Buka Chat</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Custom Confirmation Modal -->
+            <div id="confirm-modal" class="modal-backdrop absolute inset-0 z-50 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center p-4">
+                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl w-full p-5 shadow-2xl text-center">
+                    <div class="w-11 h-11 mx-auto rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 flex items-center justify-center text-lg mb-2.5">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <h3 id="confirm-title" class="font-bold text-base">Konfirmasi Hapus</h3>
+                    <p id="confirm-message" class="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">Apakah Anda yakin ingin menghapus item ini?</p>
+                    <div class="flex items-center justify-center space-x-2.5 mt-5">
+                        <button type="button" data-close-modal="confirm-modal" class="flex-1 py-2.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition">Batal</button>
+                        <button type="button" id="confirm-action-btn" class="flex-1 py-2.5 rounded-xl text-xs font-semibold bg-red-600 hover:bg-red-700 text-white shadow-md shadow-red-500/20 transition">Ya, Hapus</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notification Toast Banner -->
+            <div id="toast" class="absolute bottom-16 left-3 right-3 z-50 transform translate-y-24 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900 text-white px-3.5 py-2.5 rounded-xl shadow-xl flex items-center space-x-2.5 border border-slate-700">
+                <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+                <span id="toast-message" class="text-xs font-medium">Notifikasi</span>
+            </div>
+
         </div>
-
-        <!-- Notification Toast -->
-        <div id="toast" class="absolute bottom-16 left-3 right-3 z-50 transform translate-y-24 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900 text-white px-3.5 py-2.5 rounded-xl shadow-xl flex items-center space-x-2.5 border border-slate-700">
-            <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
-            <span id="toast-message" class="text-xs font-medium">Notifikasi</span>
-        </div>
-
-    </div>
     </div>
 
-    <!-- Application JavaScript with Firebase Module -->
+    <!-- Application JavaScript (ES Module with Firebase v11.6.1 + Local Fallback) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, updateDoc, addDoc, deleteDoc, getDocs, collection, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Configuration (Project: chatverse-elpdw)
+        // Firebase Project Configuration (Project: chatverse-elpdw)
         const userFirebaseConfig = {
             apiKey: "AIzaSyDxIKM_f--DZWYj3Bl74x6xlLEMEp7OtHQ",
             authDomain: "chatverse-elpdw.firebaseapp.com",
@@ -469,23 +479,16 @@
                 auth = getAuth(app);
                 db = getFirestore(app);
             } catch (e) {
-                console.warn("Firebase init error, switching to local mode:", e);
+                console.warn("Firebase init error, switching to local multi-tab mode:", e);
                 isLocalFallback = true;
             }
         }
 
-        // Cross-tab sync channel fallback
-        const localSyncChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('chatverse_local_sync_v2') : null;
+        // Cross-tab BroadcastChannel for local multi-tab fallback
+        const localSyncChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('chatverse_local_sync_v3') : null;
 
-        // Default Channels Seed
+        // Default Public Channels (#general removed)
         const defaultChannels = [
-            {
-                id: 'general',
-                name: '#general',
-                color: '16a34a',
-                subtitle: 'Ruang diskusi umum & perkenalan anggota baru',
-                isDefault: true
-            },
             {
                 id: 'announcements',
                 name: '#announcements',
@@ -509,13 +512,14 @@
             }
         ];
 
-        // Global App State
+        // Global Application State
         let channels = [...defaultChannels];
-        let localMessages = [
+        let deletedChannelIds = new Set();
+        let allMessages = [
             {
                 id: 'welcome-1',
-                channelId: 'general',
-                text: 'Halo! Selamat datang di ChatVerse 👋 Mulai ngobrol atau bagikan alamat web ini untuk mengobrol secara real-time.',
+                channelId: 'announcements',
+                text: 'Halo! Selamat datang di ChatVerse 👋 Kamu bisa mengobrol di grup atau mulai Chat Personal 1-on-1 lewat kode unik (#XXXX).',
                 senderId: 'system-bot',
                 senderName: 'ChatVerse Bot',
                 senderColor: '16a34a',
@@ -529,7 +533,10 @@
             photoURL: '',
             inviteCode: ''
         };
-        let activeChannelId = 'general';
+        let activeChannelId = 'announcements';
+        let activeChatType = 'channel'; // 'channel' | 'dm'
+        let activeDmPartner = null;
+        let dmPartners = [];
         let unreadCounts = {};
         let knownMessageIds = new Set();
         let replyTarget = null;
@@ -557,8 +564,51 @@
             try {
                 localStorage.setItem(key, JSON.stringify(val));
             } catch {
-                // Ignore storage quota / private mode errors
+                // Ignore storage quota or private mode errors
             }
+        }
+
+        // Deterministic Private DM Room ID
+        function getDmChannelId(uidA, uidB) {
+            return 'dm_' + [String(uidA), String(uidB)].sort().join('__');
+        }
+
+        function isDmChannelId(chId) {
+            return typeof chId === 'string' && chId.startsWith('dm_');
+        }
+
+        function extractPartnerUidFromDm(dmChId, myUid) {
+            if (!isDmChannelId(dmChId)) return null;
+            const rawPair = dmChId.slice(3).split('__');
+            if (rawPair.length !== 2) return null;
+            if (rawPair[0] === myUid) return rawPair[1];
+            if (rawPair[1] === myUid) return rawPair[0];
+            return null;
+        }
+
+        // Persist & Restore DM Partners List
+        function loadSavedDmPartners() {
+            if (!currentUser) return;
+            const saved = safeStorageGet(`chatverse_dm_partners_${currentUser.uid}`, []);
+            if (Array.isArray(saved)) {
+                dmPartners = saved;
+            }
+        }
+
+        function saveDmPartners() {
+            if (!currentUser) return;
+            safeStorageSet(`chatverse_dm_partners_${currentUser.uid}`, dmPartners);
+        }
+
+        function upsertDmPartner(partnerObj) {
+            if (!partnerObj || !partnerObj.uid || (currentUser && partnerObj.uid === currentUser.uid)) return;
+            const idx = dmPartners.findIndex(p => p.uid === partnerObj.uid);
+            if (idx >= 0) {
+                dmPartners[idx] = { ...dmPartners[idx], ...partnerObj };
+            } else {
+                dmPartners.unshift(partnerObj);
+            }
+            saveDmPartners();
         }
 
         // Synthesized Subtle Notification Sound (Web Audio API)
@@ -584,7 +634,7 @@
             }
         }
 
-        // Cross-tab BroadcastChannel Handshake & Sync (Used only if offline/fallback)
+        // Cross-tab BroadcastChannel Handshake & Sync (Used only in local fallback mode)
         if (localSyncChannel) {
             localSyncChannel.onmessage = (event) => {
                 if (!isLocalFallback) return;
@@ -595,28 +645,23 @@
                         type: 'FULL_SYNC_STATE',
                         payload: {
                             channels,
-                            messages: localMessages,
+                            messages: allMessages,
                             users: onlineUsers
                         }
                     });
                 } else if (type === 'FULL_SYNC_STATE' && payload) {
-                    if (Array.isArray(payload.channels) && payload.channels.length > 0) {
-                        channels = payload.channels;
-                        renderChatList(document.getElementById('chat-search').value);
-                        updateActiveChannelHeader();
+                    if (Array.isArray(payload.channels)) {
+                        channels = payload.channels.filter(c => c.id !== 'general' && !deletedChannelIds.has(c.id));
                     }
                     if (Array.isArray(payload.messages)) {
-                        let added = false;
                         payload.messages.forEach(m => {
-                            if (!localMessages.find(existing => existing.id === m.id)) {
-                                localMessages.push(m);
-                                added = true;
+                            if (!allMessages.find(existing => existing.id === m.id)) {
+                                allMessages.push(m);
+                                handleIncomingMessageSideEffects(m, false);
                             }
                         });
-                        if (added) {
-                            localMessages.sort((a, b) => (a.createdAtMs || 0) - (b.createdAtMs || 0));
-                            renderMessages(localMessages.filter(m => m.channelId === activeChannelId));
-                        }
+                        allMessages.sort((a, b) => (a.createdAtMs || 0) - (b.createdAtMs || 0));
+                        renderActiveMessages();
                     }
                     if (Array.isArray(payload.users)) {
                         payload.users.forEach(u => {
@@ -624,41 +669,52 @@
                             if (idx >= 0) onlineUsers[idx] = u;
                             else onlineUsers.push(u);
                         });
+                        syncDmPartnersFromOnlineUsers();
                         renderMemberList();
                     }
+                    renderChatList(document.getElementById('chat-search').value);
+                    updateActiveChannelHeader();
                 } else if (type === 'NEW_MESSAGE') {
-                    if (!localMessages.find(m => m.id === payload.id)) {
-                        localMessages.push(payload);
+                    if (!allMessages.find(m => m.id === payload.id)) {
+                        allMessages.push(payload);
+                        handleIncomingMessageSideEffects(payload, true);
                         if (payload.channelId === activeChannelId) {
-                            renderMessages(localMessages.filter(m => m.channelId === activeChannelId));
-                        } else {
-                            unreadCounts[payload.channelId] = (unreadCounts[payload.channelId] || 0) + 1;
-                            renderChatList(document.getElementById('chat-search').value);
-                            updateSidebarUnreadIndicator();
+                            renderActiveMessages();
                         }
-                        if (currentUser && payload.senderId !== currentUser.uid) {
-                            playPopSound();
-                        }
+                        renderChatList(document.getElementById('chat-search').value);
                     }
                 } else if (type === 'DELETE_MESSAGE') {
-                    localMessages = localMessages.filter(m => m.id !== payload.id);
-                    renderMessages(localMessages.filter(m => m.channelId === activeChannelId));
+                    allMessages = allMessages.filter(m => m.id !== payload.id);
+                    renderActiveMessages();
+                    renderChatList(document.getElementById('chat-search').value);
+                } else if (type === 'CLEAR_CHANNEL_MESSAGES') {
+                    allMessages = allMessages.filter(m => m.channelId !== payload.channelId);
+                    if (payload.channelId === activeChannelId) {
+                        renderActiveMessages();
+                    }
+                    renderChatList(document.getElementById('chat-search').value);
                 } else if (type === 'SYNC_USERS') {
                     const idx = onlineUsers.findIndex(u => u.uid === payload.uid);
                     if (idx >= 0) onlineUsers[idx] = payload;
                     else onlineUsers.push(payload);
+                    syncDmPartnersFromOnlineUsers();
                     renderMemberList();
+                    renderChatList(document.getElementById('chat-search').value);
+                    updateActiveChannelHeader();
                 } else if (type === 'DELETE_USER') {
                     onlineUsers = onlineUsers.filter(u => u.uid !== payload.uid);
                     renderMemberList();
                 } else if (type === 'SYNC_CHANNELS') {
-                    channels = payload;
-                    if (!channels.find(c => c.id === activeChannelId)) {
-                        activeChannelId = channels[0].id;
-                        switchChannel(activeChannelId);
+                    channels = payload.filter(c => c.id !== 'general' && !deletedChannelIds.has(c.id));
+                    if (activeChatType === 'channel') {
+                        if (channels.length > 0 && !channels.find(c => c.id === activeChannelId)) {
+                            switchChannel(channels[0].id);
+                        } else {
+                            updateActiveChannelHeader();
+                            renderActiveMessages();
+                        }
                     }
                     renderChatList(document.getElementById('chat-search').value);
-                    updateActiveChannelHeader();
                 }
             };
         }
@@ -709,6 +765,7 @@
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     currentUser = user;
+                    loadSavedDmPartners();
                     if (userProfile.name) {
                         document.getElementById('auth-modal').classList.add('hidden');
                         updateSidebarUserUI();
@@ -716,6 +773,7 @@
                         startPresenceHeartbeat();
                         listenToChannels();
                         listenToUsers();
+                        listenToAllMessages();
                         switchChannel(activeChannelId);
                     }
                 }
@@ -838,6 +896,7 @@
                 await initAuth();
             }
 
+            loadSavedDmPartners();
             userProfile.name = nameInput;
             userProfile.photoURL = '';
             await getOrCreateUniqueCode();
@@ -850,7 +909,8 @@
                 updateSidebarUserUI();
                 listenToChannels();
                 listenToUsers();
-                switchChannel(activeChannelId);
+                listenToAllMessages();
+                switchChannel(channels[0] ? channels[0].id : 'announcements');
                 const modeLabel = isLocalFallback ? ' (Mode Browser Lokal)' : '';
                 showToast(`Selamat datang, ${userProfile.name}! Kode: #${userProfile.inviteCode}${modeLabel}`, 'fa-solid fa-hand-sparkles');
             } catch (err) {
@@ -899,6 +959,26 @@
             }, 30000);
         }
 
+        function syncDmPartnersFromOnlineUsers() {
+            if (!onlineUsers.length) return;
+            let updated = false;
+            dmPartners = dmPartners.map(partner => {
+                const fresh = onlineUsers.find(u => u.uid === partner.uid);
+                if (fresh) {
+                    updated = true;
+                    return { ...partner, ...fresh };
+                }
+                return partner;
+            });
+            if (activeChatType === 'dm' && activeDmPartner) {
+                const freshActive = onlineUsers.find(u => u.uid === activeDmPartner.uid);
+                if (freshActive) {
+                    activeDmPartner = { ...activeDmPartner, ...freshActive };
+                }
+            }
+            if (updated) saveDmPartners();
+        }
+
         function listenToUsers() {
             if (!currentUser) return;
             if (isLocalFallback) {
@@ -915,7 +995,10 @@
                 });
                 users.sort((a, b) => (b.lastActive || 0) - (a.lastActive || 0));
                 onlineUsers = users;
+                syncDmPartnersFromOnlineUsers();
                 renderMemberList();
+                renderChatList(document.getElementById('chat-search').value);
+                if (activeChatType === 'dm') updateActiveChannelHeader();
             }, (error) => {
                 console.error("Error listening to users:", error);
             });
@@ -931,13 +1014,27 @@
             if (unsubscribeChannels) unsubscribeChannels();
 
             const channelsCol = collection(db, 'artifacts', appId, 'public', 'data', 'chat_channels');
+            const alreadySeeded = Boolean(safeStorageGet('chatverse_channels_seeded', false));
             
             try {
                 const initialSnap = await getDocs(channelsCol);
-                if (initialSnap.empty) {
-                    for (const ch of defaultChannels) {
+                const existingValidDocs = [];
+                initialSnap.forEach((d) => {
+                    if (d.id === 'general') {
+                        deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'chat_channels', 'general')).catch(() => {});
+                    } else {
+                        existingValidDocs.push(d.id);
+                    }
+                });
+
+                if (existingValidDocs.length === 0 && !alreadySeeded) {
+                    const toSeed = defaultChannels.filter(ch => !deletedChannelIds.has(ch.id));
+                    for (const ch of toSeed) {
                         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'chat_channels', ch.id), ch);
                     }
+                    safeStorageSet('chatverse_channels_seeded', true);
+                } else if (existingValidDocs.length > 0) {
+                    safeStorageSet('chatverse_channels_seeded', true);
                 }
             } catch (err) {
                 console.error("Error seeding channels:", err);
@@ -946,25 +1043,31 @@
             unsubscribeChannels = onSnapshot(channelsCol, (snapshot) => {
                 const loadedChannels = [];
                 snapshot.forEach((docSnap) => {
-                    loadedChannels.push({ id: docSnap.id, ...docSnap.data() });
+                    if (docSnap.id !== 'general' && !deletedChannelIds.has(docSnap.id)) {
+                        loadedChannels.push({ id: docSnap.id, ...docSnap.data() });
+                    }
                 });
 
                 if (loadedChannels.length > 0) {
                     loadedChannels.sort((a, b) => {
-                        if (a.id === 'general') return -1;
-                        if (b.id === 'general') return 1;
+                        if (a.id === 'announcements') return -1;
+                        if (b.id === 'announcements') return 1;
                         return (a.name || '').localeCompare(b.name || '');
                     });
                     channels = loadedChannels;
+                } else if (!safeStorageGet('chatverse_channels_seeded', false)) {
+                    channels = defaultChannels.filter(ch => !deletedChannelIds.has(ch.id));
                 } else {
-                    channels = [...defaultChannels];
+                    channels = [];
                 }
 
-                if (!channels.find(c => c.id === activeChannelId)) {
-                    activeChannelId = channels[0].id;
-                    switchChannel(activeChannelId);
-                } else {
-                    updateActiveChannelHeader();
+                if (activeChatType === 'channel') {
+                    if (channels.length > 0 && !channels.find(c => c.id === activeChannelId)) {
+                        switchChannel(channels[0].id);
+                    } else {
+                        updateActiveChannelHeader();
+                        renderActiveMessages();
+                    }
                 }
 
                 renderChatList(document.getElementById('chat-search').value);
@@ -984,7 +1087,36 @@
             return 'Offline';
         }
 
-        // Render Member List (Safe DOM Event Listeners)
+        // Open 1-on-1 Personal Chat with a Target User
+        function openPersonalChat(targetUser) {
+            if (!currentUser) {
+                openProfileSwitchModal();
+                return;
+            }
+            if (!targetUser || !targetUser.uid) return;
+
+            if (targetUser.uid === currentUser.uid) {
+                showToast("Ini adalah profil Anda sendiri.", "fa-solid fa-user");
+                return;
+            }
+
+            const dmId = getDmChannelId(currentUser.uid, targetUser.uid);
+            activeChatType = 'dm';
+            activeDmPartner = targetUser;
+            activeChannelId = dmId;
+            unreadCounts[dmId] = 0;
+
+            upsertDmPartner(targetUser);
+            clearReplyTarget();
+            updateSidebarUnreadIndicator();
+            updateActiveChannelHeader();
+            renderChatList(document.getElementById('chat-search').value);
+            closeAllDrawers();
+            renderActiveMessages();
+            document.getElementById('message-input').focus();
+        }
+
+        // Render Member List (Right Drawer) with Direct Message Action
         function renderMemberList() {
             const badge = document.getElementById('online-count-badge');
             const header = document.getElementById('online-members-header');
@@ -1010,7 +1142,7 @@
                 item.className = 'flex items-center justify-between group p-1.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/40 transition';
 
                 const leftWrap = document.createElement('div');
-                leftWrap.className = 'flex items-center space-x-2.5 min-w-0';
+                leftWrap.className = `flex items-center space-x-2.5 min-w-0 flex-1 ${!isMe ? 'cursor-pointer' : ''}`;
                 leftWrap.innerHTML = `
                     <div class="relative flex-shrink-0">
                         <img src="${avatarSrc}" class="w-8 h-8 rounded-full object-cover" alt="${escapeHtml(u.name)}">
@@ -1024,16 +1156,40 @@
                         <p class="text-[11px] ${isOnlineNow ? 'text-emerald-500' : 'text-slate-400'}">${isMe ? '<span class="text-brand-500 font-semibold">Kamu</span> • ' : ''}${statusText}</p>
                     </div>
                 `;
+                if (!isMe) {
+                    leftWrap.title = `Chat personal dengan ${u.name}`;
+                    leftWrap.addEventListener('click', () => openPersonalChat(u));
+                }
+
+                const btnGroup = document.createElement('div');
+                btnGroup.className = 'flex items-center space-x-0.5 flex-shrink-0';
+
+                if (!isMe) {
+                    const dmBtn = document.createElement('button');
+                    dmBtn.type = 'button';
+                    dmBtn.className = 'p-1.5 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/30 rounded-lg transition';
+                    dmBtn.title = `Chat Personal dengan ${u.name}`;
+                    dmBtn.innerHTML = '<i class="fa-solid fa-comment-dots text-xs"></i>';
+                    dmBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        openPersonalChat(u);
+                    });
+                    btnGroup.appendChild(dmBtn);
+                }
 
                 const delBtn = document.createElement('button');
                 delBtn.type = 'button';
                 delBtn.className = 'p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg opacity-80 sm:opacity-0 group-hover:opacity-100 transition';
                 delBtn.title = 'Hapus Kontak';
                 delBtn.innerHTML = '<i class="fa-solid fa-user-minus text-xs"></i>';
-                delBtn.addEventListener('click', () => confirmDeleteContact(u.uid, u.name));
+                delBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    confirmDeleteContact(u.uid, u.name);
+                });
+                btnGroup.appendChild(delBtn);
 
                 item.appendChild(leftWrap);
-                item.appendChild(delBtn);
+                item.appendChild(btnGroup);
                 list.appendChild(item);
             });
         }
@@ -1060,14 +1216,21 @@
             const codeInput = document.getElementById('target-invite-code').value.trim().replace('#', '');
             if (!codeInput) return;
 
-            const foundUser = onlineUsers.find(u => u.inviteCode === codeInput);
+            const foundUser = onlineUsers.find(u => String(u.inviteCode) === codeInput);
             closeModalById('add-by-code-modal');
 
-            if (foundUser) {
-                showToast(`Kontak ditemukan: ${foundUser.name} (#${foundUser.inviteCode})!`, 'fa-solid fa-circle-check');
-            } else {
-                showToast(`Kontak dengan kode #${codeInput} tidak ditemukan.`, 'fa-solid fa-triangle-exclamation');
+            if (!foundUser) {
+                showToast(`Pengguna dengan kode #${codeInput} tidak ditemukan.`, 'fa-solid fa-triangle-exclamation');
+                return;
             }
+
+            if (currentUser && foundUser.uid === currentUser.uid) {
+                showToast(`Kode #${codeInput} adalah kode unik milik Anda sendiri.`, 'fa-solid fa-user');
+                return;
+            }
+
+            openPersonalChat(foundUser);
+            showToast(`Chat personal dengan ${foundUser.name} (#${foundUser.inviteCode}) dibuka!`, 'fa-solid fa-comment-dots');
         }
 
         function updateSidebarUnreadIndicator() {
@@ -1080,62 +1243,92 @@
             }
         }
 
-        // Render Channel List
+        function getLastMessagePreviewForRoom(roomId) {
+            const roomMsgs = allMessages.filter(m => m.channelId === roomId);
+            if (roomMsgs.length === 0) return null;
+            const last = roomMsgs[roomMsgs.length - 1];
+            if (last.imageData) return '📷 Foto';
+            if (last.fileName) return `📎 ${last.fileName}`;
+            return last.text || '';
+        }
+
+        // Render Channel & Personal DM List in Left Sidebar
         function renderChatList(filterText = '') {
             const listContainer = document.getElementById('chat-list');
             listContainer.innerHTML = '';
+            const q = filterText.trim().toLowerCase();
 
-            const filtered = channels.filter(c => c.name.toLowerCase().includes(filterText.toLowerCase()));
+            // --- SECTION 1: GRUP / CHANNEL ---
+            const groupSection = document.createElement('div');
+            groupSection.className = 'space-y-1';
 
-            if (filtered.length === 0) {
-                listContainer.innerHTML = `<div class="p-4 text-center text-slate-400 text-sm">Channel tidak ditemukan</div>`;
-                return;
-            }
+            const groupHeader = document.createElement('div');
+            groupHeader.className = 'flex items-center justify-between px-2 pt-1 pb-1';
+            groupHeader.innerHTML = `
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Grup / Channel</span>
+            `;
+            const addGroupBtn = document.createElement('button');
+            addGroupBtn.type = 'button';
+            addGroupBtn.className = 'w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-700 hover:bg-brand-600 hover:text-white text-slate-500 dark:text-slate-300 flex items-center justify-center transition';
+            addGroupBtn.title = 'Buat Group Baru';
+            addGroupBtn.innerHTML = '<i class="fa-solid fa-plus text-[10px]"></i>';
+            addGroupBtn.addEventListener('click', openCreateChannelModal);
+            groupHeader.appendChild(addGroupBtn);
+            groupSection.appendChild(groupHeader);
 
-            filtered.forEach(channel => {
-                const isActive = channel.id === activeChannelId;
-                const unread = isActive ? 0 : (unreadCounts[channel.id] || 0);
-                const chColor = channel.color || '16a34a';
-                const chLetter = (channel.name.replace('#', '') || 'G').substring(0, 1).toUpperCase();
-                const avatarUrl = channel.avatar || `https://placehold.co/100x100/${chColor}/ffffff?text=${encodeURIComponent(chLetter)}`;
+            const filteredChannels = channels.filter(c =>
+                c.name.toLowerCase().includes(q) || (c.subtitle || '').toLowerCase().includes(q)
+            );
 
-                const item = document.createElement('div');
-                item.className = `group flex items-center justify-between p-2.5 rounded-2xl cursor-pointer transition ${
-                    isActive 
-                        ? 'bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-300 font-medium' 
-                        : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
-                }`;
-                item.addEventListener('click', () => switchChannel(channel.id));
+            if (filteredChannels.length === 0) {
+                const emptyCh = document.createElement('p');
+                emptyCh.className = 'px-2 py-2 text-[11px] text-slate-400';
+                emptyCh.innerText = 'Grup tidak ditemukan';
+                groupSection.appendChild(emptyCh);
+            } else {
+                filteredChannels.forEach(channel => {
+                    const isActive = activeChatType === 'channel' && channel.id === activeChannelId;
+                    const unread = isActive ? 0 : (unreadCounts[channel.id] || 0);
+                    const chColor = channel.color || '16a34a';
+                    const chLetter = (channel.name.replace('#', '') || 'G').substring(0, 1).toUpperCase();
+                    const avatarUrl = channel.avatar || `https://placehold.co/100x100/${chColor}/ffffff?text=${encodeURIComponent(chLetter)}`;
 
-                const infoDiv = document.createElement('div');
-                infoDiv.className = 'flex items-center space-x-2.5 min-w-0';
-                infoDiv.innerHTML = `
-                    <img src="${avatarUrl}" class="w-8 h-8 rounded-full object-cover flex-shrink-0" alt="${escapeHtml(channel.name)}">
-                    <div class="min-w-0">
-                        <div class="flex items-center space-x-1.5">
-                            <h4 class="text-xs font-bold truncate">${escapeHtml(channel.name)}</h4>
-                            ${unread > 0 ? `<span class="px-1.5 py-0.2 bg-brand-600 text-white text-[9px] font-bold rounded-full">${unread > 99 ? '99+' : unread}</span>` : ''}
+                    const item = document.createElement('div');
+                    item.className = `group flex items-center justify-between p-2 rounded-2xl cursor-pointer transition ${
+                        isActive 
+                            ? 'bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-300 font-medium' 
+                            : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+                    }`;
+                    item.addEventListener('click', () => switchChannel(channel.id));
+
+                    const infoDiv = document.createElement('div');
+                    infoDiv.className = 'flex items-center space-x-2.5 min-w-0';
+                    infoDiv.innerHTML = `
+                        <img src="${avatarUrl}" class="w-8 h-8 rounded-full object-cover flex-shrink-0" alt="${escapeHtml(channel.name)}">
+                        <div class="min-w-0">
+                            <div class="flex items-center space-x-1.5">
+                                <h4 class="text-xs font-bold truncate">${escapeHtml(channel.name)}</h4>
+                                ${unread > 0 ? `<span class="px-1.5 py-0.2 bg-brand-600 text-white text-[9px] font-bold rounded-full">${unread > 99 ? '99+' : unread}</span>` : ''}
+                            </div>
+                            <p class="text-[10px] text-slate-400 truncate">${escapeHtml(channel.subtitle || '')}</p>
                         </div>
-                        <p class="text-[10px] text-slate-400 truncate">${escapeHtml(channel.subtitle || '')}</p>
-                    </div>
-                `;
-                item.appendChild(infoDiv);
+                    `;
+                    item.appendChild(infoDiv);
 
-                const actionGroup = document.createElement('div');
-                actionGroup.className = 'flex items-center space-x-0.5 flex-shrink-0 ml-1';
+                    const actionGroup = document.createElement('div');
+                    actionGroup.className = 'flex items-center space-x-0.5 flex-shrink-0 ml-1';
 
-                const renameBtn = document.createElement('button');
-                renameBtn.type = 'button';
-                renameBtn.className = 'p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/30 rounded-lg transition';
-                renameBtn.title = 'Ubah Nama Group';
-                renameBtn.innerHTML = '<i class="fa-solid fa-pen text-[11px]"></i>';
-                renameBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    openRenameChannelModal(channel.id);
-                });
-                actionGroup.appendChild(renameBtn);
+                    const renameBtn = document.createElement('button');
+                    renameBtn.type = 'button';
+                    renameBtn.className = 'p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/30 rounded-lg transition';
+                    renameBtn.title = 'Ubah Nama Group';
+                    renameBtn.innerHTML = '<i class="fa-solid fa-pen text-[11px]"></i>';
+                    renameBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        openRenameChannelModal(channel.id);
+                    });
+                    actionGroup.appendChild(renameBtn);
 
-                if (channel.id !== 'general') {
                     const delBtn = document.createElement('button');
                     delBtn.type = 'button';
                     delBtn.className = 'p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition';
@@ -1146,16 +1339,160 @@
                         confirmDeleteChannel(channel.id);
                     });
                     actionGroup.appendChild(delBtn);
-                }
 
-                item.appendChild(actionGroup);
-                listContainer.appendChild(item);
-            });
+                    item.appendChild(actionGroup);
+                    groupSection.appendChild(item);
+                });
+            }
+
+            listContainer.appendChild(groupSection);
+
+            // --- SECTION 2: CHAT PERSONAL (DIRECT MESSAGES) ---
+            const dmSection = document.createElement('div');
+            dmSection.className = 'space-y-1 pt-2 border-t border-slate-200/70 dark:border-slate-700/70';
+
+            const dmHeader = document.createElement('div');
+            dmHeader.className = 'flex items-center justify-between px-2 pb-1';
+            dmHeader.innerHTML = `
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Chat Personal</span>
+            `;
+            const addDmBtn = document.createElement('button');
+            addDmBtn.type = 'button';
+            addDmBtn.className = 'w-5 h-5 rounded-md bg-brand-50 dark:bg-brand-900/40 hover:bg-brand-600 hover:text-white text-brand-600 dark:text-brand-300 flex items-center justify-center transition';
+            addDmBtn.title = 'Mulai Chat Personal via Kode';
+            addDmBtn.innerHTML = '<i class="fa-solid fa-plus text-[10px]"></i>';
+            addDmBtn.addEventListener('click', openAddByCodeModal);
+            dmHeader.appendChild(addDmBtn);
+            dmSection.appendChild(dmHeader);
+
+            const filteredDms = dmPartners.filter(p =>
+                (p.name || '').toLowerCase().includes(q) || (p.inviteCode || '').toLowerCase().includes(q)
+            );
+
+            if (filteredDms.length === 0) {
+                const emptyDmCard = document.createElement('button');
+                emptyDmCard.type = 'button';
+                emptyDmCard.className = 'w-full text-left p-2.5 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 hover:border-brand-500 hover:bg-brand-50/40 dark:hover:bg-brand-900/10 transition flex items-center space-x-2.5';
+                emptyDmCard.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-brand-50 dark:bg-brand-900/30 text-brand-600 flex items-center justify-center flex-shrink-0 text-xs">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">Mulai Chat 1-on-1</p>
+                        <p class="text-[10px] text-slate-400 truncate">Masukkan kode unik #XXXX</p>
+                    </div>
+                `;
+                emptyDmCard.addEventListener('click', openAddByCodeModal);
+                dmSection.appendChild(emptyDmCard);
+            } else {
+                filteredDms.forEach(partner => {
+                    const dmRoomId = currentUser ? getDmChannelId(currentUser.uid, partner.uid) : '';
+                    const isActive = activeChatType === 'dm' && activeChannelId === dmRoomId;
+                    const unread = isActive ? 0 : (unreadCounts[dmRoomId] || 0);
+                    const avatarSrc = getAvatarUrl(partner.name, partner.color, partner.photoURL);
+                    const statusText = formatRelativeStatus(partner.lastActive);
+                    const isOnlineNow = statusText === 'Online';
+                    const lastPreview = getLastMessagePreviewForRoom(dmRoomId);
+
+                    const item = document.createElement('div');
+                    item.className = `group flex items-center justify-between p-2 rounded-2xl cursor-pointer transition ${
+                        isActive 
+                            ? 'bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-300 font-medium' 
+                            : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+                    }`;
+                    item.addEventListener('click', () => openPersonalChat(partner));
+
+                    const infoDiv = document.createElement('div');
+                    infoDiv.className = 'flex items-center space-x-2.5 min-w-0';
+                    infoDiv.innerHTML = `
+                        <div class="relative flex-shrink-0">
+                            <img src="${avatarSrc}" class="w-8 h-8 rounded-full object-cover" alt="${escapeHtml(partner.name)}">
+                            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 ${isOnlineNow ? 'bg-emerald-500' : 'bg-slate-400'} border-2 border-white dark:border-slate-800 rounded-full"></span>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center space-x-1.5">
+                                <h4 class="text-xs font-bold truncate">${escapeHtml(partner.name)}</h4>
+                                ${partner.inviteCode ? `<span class="text-[9px] font-mono text-slate-400">#${escapeHtml(partner.inviteCode)}</span>` : ''}
+                                ${unread > 0 ? `<span class="px-1.5 py-0.2 bg-brand-600 text-white text-[9px] font-bold rounded-full">${unread > 99 ? '99+' : unread}</span>` : ''}
+                            </div>
+                            <p class="text-[10px] text-slate-400 truncate">${escapeHtml(lastPreview || statusText)}</p>
+                        </div>
+                    `;
+                    item.appendChild(infoDiv);
+                    dmSection.appendChild(item);
+                });
+            }
+
+            listContainer.appendChild(dmSection);
         }
 
         function updateActiveChannelHeader() {
+            const renameHeaderBtn = document.getElementById('btn-header-rename');
+            const deleteHeaderBtn = document.getElementById('header-delete-channel-btn');
+            const renameInfoBtn = document.getElementById('btn-info-rename');
+            const deleteInfoBtn = document.getElementById('sidebar-delete-channel-btn');
+            const removeDmBtn = document.getElementById('btn-remove-dm-thread');
+            const dmBadgeEl = document.getElementById('current-dm-badge');
+            const statusDotEl = document.getElementById('current-chat-status-dot');
+
+            if (activeChatType === 'dm' && activeDmPartner) {
+                const avatarUrl = getAvatarUrl(activeDmPartner.name, activeDmPartner.color, activeDmPartner.photoURL);
+                const statusText = formatRelativeStatus(activeDmPartner.lastActive);
+                const isOnlineNow = statusText === 'Online';
+
+                document.getElementById('current-chat-title').innerText = activeDmPartner.name;
+                document.getElementById('current-chat-subtitle').innerText = `Chat Personal • ${statusText}`;
+                document.getElementById('current-chat-avatar').src = avatarUrl;
+                document.getElementById('info-drawer-header').innerText = 'Info Chat Personal';
+                document.getElementById('info-title').innerText = activeDmPartner.name;
+                document.getElementById('info-avatar').src = avatarUrl;
+                document.getElementById('info-desc').innerText = activeDmPartner.inviteCode
+                    ? `Percakapan pribadi 1-on-1 • Kode Unik #${activeDmPartner.inviteCode}`
+                    : 'Percakapan pribadi 1-on-1';
+
+                if (activeDmPartner.inviteCode) {
+                    dmBadgeEl.innerText = `#${activeDmPartner.inviteCode}`;
+                    dmBadgeEl.classList.remove('hidden');
+                } else {
+                    dmBadgeEl.classList.add('hidden');
+                }
+
+                statusDotEl.className = `absolute bottom-0 right-0 w-2.5 h-2.5 ${isOnlineNow ? 'bg-emerald-500' : 'bg-slate-400'} border-2 border-white dark:border-slate-900 rounded-full`;
+
+                renameHeaderBtn.classList.add('hidden');
+                deleteHeaderBtn.classList.add('hidden');
+                renameInfoBtn.classList.add('hidden');
+                deleteInfoBtn.classList.add('hidden');
+                removeDmBtn.classList.remove('hidden');
+                return;
+            }
+
+            // Channel / Group Mode
             const channel = channels.find(c => c.id === activeChannelId);
-            if (!channel) return;
+            const clearHeaderBtn = document.getElementById('btn-header-clear-chat');
+            const clearInfoBtn = document.getElementById('btn-info-clear-chat');
+
+            if (!channel) {
+                const emptyAvatar = 'https://placehold.co/100x100/64748b/ffffff?text=%23';
+                document.getElementById('current-chat-title').innerText = 'Belum Ada Group';
+                document.getElementById('current-chat-subtitle').innerText = 'Buat grup baru di menu kiri';
+                document.getElementById('current-chat-avatar').src = emptyAvatar;
+                document.getElementById('info-drawer-header').innerText = 'Info Group & Kontak';
+                document.getElementById('info-title').innerText = 'Belum Ada Group';
+                document.getElementById('info-avatar').src = emptyAvatar;
+                document.getElementById('info-desc').innerText = 'Silakan buat grup baru untuk mulai mengobrol.';
+                dmBadgeEl.classList.add('hidden');
+                statusDotEl.className = 'hidden';
+                renameHeaderBtn.classList.add('hidden');
+                renameInfoBtn.classList.add('hidden');
+                deleteHeaderBtn.classList.add('hidden');
+                deleteInfoBtn.classList.add('hidden');
+                if (clearHeaderBtn) clearHeaderBtn.classList.add('hidden');
+                if (clearInfoBtn) clearInfoBtn.classList.add('hidden');
+                removeDmBtn.classList.add('hidden');
+                return;
+            }
+
             const chColor = channel.color || '16a34a';
             const chLetter = (channel.name.replace('#', '') || 'G').substring(0, 1).toUpperCase();
             const avatarUrl = channel.avatar || `https://placehold.co/100x100/${chColor}/ffffff?text=${encodeURIComponent(chLetter)}`;
@@ -1163,28 +1500,43 @@
             document.getElementById('current-chat-title').innerText = channel.name;
             document.getElementById('current-chat-subtitle').innerText = channel.subtitle || '';
             document.getElementById('current-chat-avatar').src = avatarUrl;
+            document.getElementById('info-drawer-header').innerText = 'Info Group & Kontak';
             document.getElementById('info-title').innerText = channel.name;
             document.getElementById('info-avatar').src = avatarUrl;
             document.getElementById('info-desc').innerText = channel.subtitle || '';
+            dmBadgeEl.classList.add('hidden');
+            statusDotEl.className = 'absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full';
 
-            const isProtected = channel.id === 'general';
-            document.getElementById('header-delete-channel-btn').classList.toggle('hidden', isProtected);
-            document.getElementById('sidebar-delete-channel-btn').classList.toggle('hidden', isProtected);
+            renameHeaderBtn.classList.remove('hidden');
+            renameInfoBtn.classList.remove('hidden');
+            deleteHeaderBtn.classList.remove('hidden');
+            deleteInfoBtn.classList.remove('hidden');
+            if (clearHeaderBtn) clearHeaderBtn.classList.remove('hidden');
+            if (clearInfoBtn) clearInfoBtn.classList.remove('hidden');
+            removeDmBtn.classList.add('hidden');
         }
 
         function switchChannel(channelId) {
-            activeChannelId = channelId;
-            unreadCounts[channelId] = 0;
+            activeChatType = 'channel';
+            activeDmPartner = null;
+            activeChannelId = channelId || '';
+            if (channelId) unreadCounts[channelId] = 0;
             clearReplyTarget();
             updateSidebarUnreadIndicator();
-
-            const channel = channels.find(c => c.id === channelId);
-            if (!channel) return;
 
             updateActiveChannelHeader();
             renderChatList(document.getElementById('chat-search').value);
             closeAllDrawers();
-            subscribeToChannelMessages(channelId);
+            renderActiveMessages();
+        }
+
+        function closeCurrentDmThread() {
+            if (activeChatType !== 'dm' || !activeDmPartner) return;
+            const removedName = activeDmPartner.name;
+            dmPartners = dmPartners.filter(p => p.uid !== activeDmPartner.uid);
+            saveDmPartners();
+            switchChannel(channels[0] ? channels[0].id : 'announcements');
+            showToast(`Chat personal dengan ${removedName} ditutup`, 'fa-solid fa-comment-slash');
         }
 
         function openCreateChannelModal() {
@@ -1292,56 +1644,119 @@
             }
         }
 
-        function openConfirmModal(title, message, onConfirm) {
+        function openConfirmModal(title, message, onConfirm, confirmLabel = 'Ya, Hapus') {
             document.getElementById('confirm-title').innerText = title;
             document.getElementById('confirm-message').innerText = message;
+            document.getElementById('confirm-action-btn').innerText = confirmLabel;
             pendingConfirmCallback = onConfirm;
             const modal = document.getElementById('confirm-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         }
 
-        function confirmDeleteChannel(channelId) {
-            if (channelId === 'general') {
-                showToast("Channel utama #general tidak dapat dihapus.", "fa-solid fa-lock");
+        // Clear All Messages in the Active Room (Group or Personal DM)
+        function confirmClearCurrentChat() {
+            const roomMsgs = allMessages.filter(m => m.channelId === activeChannelId);
+            if (roomMsgs.length === 0) {
+                showToast("Riwayat chat sudah kosong.", "fa-solid fa-broom");
                 return;
             }
+
+            const roomTitle = activeChatType === 'dm' && activeDmPartner
+                ? `chat personal dengan ${activeDmPartner.name}`
+                : `grup ${(channels.find(c => c.id === activeChannelId) || {}).name || activeChannelId}`;
+
+            openConfirmModal(
+                "Bersihkan Riwayat Chat?",
+                `Seluruh pesan pada ${roomTitle} akan dihapus permanen.`,
+                async () => {
+                    const targetRoomId = activeChannelId;
+                    if (isLocalFallback) {
+                        allMessages = allMessages.filter(m => m.channelId !== targetRoomId);
+                        if (localSyncChannel) {
+                            localSyncChannel.postMessage({ type: 'CLEAR_CHANNEL_MESSAGES', payload: { channelId: targetRoomId } });
+                        }
+                        renderActiveMessages();
+                        renderChatList(document.getElementById('chat-search').value);
+                        closeAllDrawers();
+                        showToast("Riwayat chat berhasil dibersihkan", "fa-solid fa-broom");
+                        return;
+                    }
+
+                    try {
+                        const msgsSnap = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'chat_messages'));
+                        const deletePromises = [];
+                        msgsSnap.forEach((mDoc) => {
+                            if (mDoc.data().channelId === targetRoomId) {
+                                deletePromises.push(deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'chat_messages', mDoc.id)));
+                            }
+                        });
+                        await Promise.all(deletePromises);
+                        closeAllDrawers();
+                        showToast("Riwayat chat berhasil dibersihkan", "fa-solid fa-broom");
+                    } catch (err) {
+                        console.error("Clear chat error:", err);
+                        showToast("Gagal membersihkan riwayat chat", "fa-solid fa-triangle-exclamation");
+                    }
+                },
+                "Ya, Bersihkan"
+            );
+        }
+
+        function confirmDeleteChannel(channelId) {
             const target = channels.find(c => c.id === channelId);
-            const chName = target ? target.name : channelId;
+            if (!target) return;
+            const chName = target.name || channelId;
 
             openConfirmModal(
                 `Hapus Group ${chName}?`,
                 `Group "${chName}" dan seluruh riwayat pesannya akan dihapus secara permanen.`,
                 async () => {
-                    if (isLocalFallback) {
-                        channels = channels.filter(c => c.id !== channelId);
-                        localMessages = localMessages.filter(m => m.channelId !== channelId);
-                        if (localSyncChannel) localSyncChannel.postMessage({ type: 'SYNC_CHANNELS', payload: channels });
-                        if (activeChannelId === channelId) {
-                            activeChannelId = channels[0].id;
-                            switchChannel(activeChannelId);
-                        }
+                    // Record deletion so default groups do not reappear
+                    deletedChannelIds.add(channelId);
+                    safeStorageSet('chatverse_deleted_channels', [...deletedChannelIds]);
+                    safeStorageSet('chatverse_channels_seeded', true);
+
+                    // Update local state immediately for instant UI response
+                    channels = channels.filter(c => c.id !== channelId);
+                    allMessages = allMessages.filter(m => m.channelId !== channelId);
+
+                    if (activeChatType === 'channel' && activeChannelId === channelId) {
+                        switchChannel(channels.length > 0 ? channels[0].id : '');
+                    } else {
                         renderChatList(document.getElementById('chat-search').value);
+                        updateActiveChannelHeader();
+                        closeAllDrawers();
+                    }
+
+                    if (isLocalFallback) {
+                        if (localSyncChannel) localSyncChannel.postMessage({ type: 'SYNC_CHANNELS', payload: channels });
                         showToast(`Group "${chName}" berhasil dihapus`, "fa-solid fa-trash-can");
                         return;
                     }
 
                     try {
                         await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'chat_channels', channelId));
-                        const msgsSnap = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'chat_messages'));
-                        const deletePromises = [];
-                        msgsSnap.forEach((mDoc) => {
-                            if (mDoc.data().channelId === channelId) {
-                                deletePromises.push(deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'chat_messages', mDoc.id)));
-                            }
-                        });
-                        await Promise.all(deletePromises);
+                        // Best-effort cleanup of messages inside the deleted group
+                        try {
+                            const msgsSnap = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'chat_messages'));
+                            const deletePromises = [];
+                            msgsSnap.forEach((mDoc) => {
+                                if (mDoc.data().channelId === channelId) {
+                                    deletePromises.push(deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'chat_messages', mDoc.id)).catch(() => {}));
+                                }
+                            });
+                            await Promise.all(deletePromises);
+                        } catch {
+                            // Ignore message cleanup errors if Firestore rules restrict deleting others' messages
+                        }
                         showToast(`Group "${chName}" berhasil dihapus`, "fa-solid fa-trash-can");
                     } catch (err) {
                         console.error("Delete channel error:", err);
-                        showToast("Gagal menghapus group", "fa-solid fa-triangle-exclamation");
+                        showToast(`Group "${chName}" dihapus dari tampilan`, "fa-solid fa-trash-can");
                     }
-                }
+                },
+                "Ya, Hapus"
             );
         }
 
@@ -1376,15 +1791,17 @@
                         console.error("Delete contact error:", err);
                         showToast("Gagal menghapus kontak", "fa-solid fa-triangle-exclamation");
                     }
-                }
+                },
+                "Ya, Hapus"
             );
         }
 
         async function deleteMessage(msgId) {
             if (isLocalFallback) {
-                localMessages = localMessages.filter(m => m.id !== msgId);
+                allMessages = allMessages.filter(m => m.id !== msgId);
                 if (localSyncChannel) localSyncChannel.postMessage({ type: 'DELETE_MESSAGE', payload: { id: msgId } });
-                renderMessages(localMessages.filter(m => m.channelId === activeChannelId));
+                renderActiveMessages();
+                renderChatList(document.getElementById('chat-search').value);
                 showToast("Pesan dihapus", "fa-solid fa-trash-can");
                 return;
             }
@@ -1398,10 +1815,51 @@
             }
         }
 
-        function subscribeToChannelMessages(channelId) {
+        // Auto-discover DM conversations & track unread counts across all rooms
+        function handleIncomingMessageSideEffects(msgData, shouldNotify) {
+            if (!currentUser || !msgData || !msgData.channelId) return;
+
+            const isDm = isDmChannelId(msgData.channelId);
+            if (isDm) {
+                const partnerUid = extractPartnerUidFromDm(msgData.channelId, currentUser.uid);
+                if (!partnerUid) return;
+
+                const knownPartner = onlineUsers.find(u => u.uid === partnerUid);
+                if (knownPartner) {
+                    upsertDmPartner(knownPartner);
+                } else if (msgData.senderId === partnerUid) {
+                    upsertDmPartner({
+                        uid: partnerUid,
+                        name: msgData.senderName || 'Pengguna',
+                        color: msgData.senderColor || '16a34a',
+                        photoURL: msgData.senderPhoto || '',
+                        inviteCode: msgData.senderCode || ''
+                    });
+                } else if (msgData.recipientId === partnerUid) {
+                    upsertDmPartner({
+                        uid: partnerUid,
+                        name: msgData.recipientName || 'Pengguna',
+                        color: msgData.recipientColor || '16a34a',
+                        photoURL: '',
+                        inviteCode: msgData.recipientCode || ''
+                    });
+                }
+            }
+
+            if (shouldNotify && msgData.senderId !== currentUser.uid) {
+                if (msgData.channelId !== activeChannelId) {
+                    unreadCounts[msgData.channelId] = (unreadCounts[msgData.channelId] || 0) + 1;
+                    updateSidebarUnreadIndicator();
+                }
+                playPopSound();
+            }
+        }
+
+        // Single Global Listener for All Channels & Personal DMs
+        function listenToAllMessages() {
             if (!currentUser) return;
             if (isLocalFallback) {
-                renderMessages(localMessages.filter(m => m.channelId === channelId));
+                renderActiveMessages();
                 return;
             }
             if (unsubscribeMessages) {
@@ -1420,35 +1878,23 @@
             let isFirstSnapshot = true;
 
             unsubscribeMessages = onSnapshot(messagesCol, (snapshot) => {
-                const channelMessages = [];
-                let hasNewIncoming = false;
-
+                const fetched = [];
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     const msgObj = { id: docSnap.id, ...data };
+                    fetched.push(msgObj);
 
-                    if (!isFirstSnapshot && !knownMessageIds.has(docSnap.id)) {
-                        if (data.channelId !== activeChannelId) {
-                            unreadCounts[data.channelId] = (unreadCounts[data.channelId] || 0) + 1;
-                            renderChatList(document.getElementById('chat-search').value);
-                            updateSidebarUnreadIndicator();
-                        }
-                        if (currentUser && data.senderId !== currentUser.uid) {
-                            hasNewIncoming = true;
-                        }
-                    }
+                    const isNew = !isFirstSnapshot && !knownMessageIds.has(docSnap.id);
+                    handleIncomingMessageSideEffects(msgObj, isNew);
                     knownMessageIds.add(docSnap.id);
-
-                    if (data.channelId === channelId) {
-                        channelMessages.push(msgObj);
-                    }
                 });
 
                 isFirstSnapshot = false;
-                if (hasNewIncoming) playPopSound();
+                fetched.sort((a, b) => (a.createdAtMs || 0) - (b.createdAtMs || 0));
+                allMessages = fetched;
 
-                channelMessages.sort((a, b) => (a.createdAtMs || 0) - (b.createdAtMs || 0));
-                renderMessages(channelMessages);
+                renderChatList(document.getElementById('chat-search').value);
+                renderActiveMessages();
             }, (error) => {
                 console.error("Firestore message listener error:", error);
                 msgContainer.innerHTML = `
@@ -1457,6 +1903,11 @@
                     </div>
                 `;
             });
+        }
+
+        function renderActiveMessages() {
+            const roomMsgs = allMessages.filter(m => m.channelId === activeChannelId);
+            renderMessages(roomMsgs);
         }
 
         // Format text safely with auto-clickable URLs
@@ -1501,14 +1952,40 @@
             const msgContainer = document.getElementById('messages-container');
             msgContainer.innerHTML = '';
 
-            if (messages.length === 0) {
+            if (activeChatType === 'channel' && channels.length === 0) {
                 msgContainer.innerHTML = `
                     <div class="flex flex-col items-center justify-center h-full text-center p-6">
                         <div class="w-16 h-16 rounded-full bg-brand-50 dark:bg-brand-900/20 text-brand-500 flex items-center justify-center text-2xl mb-3">
-                            <i class="fa-regular fa-comments"></i>
+                            <i class="fa-solid fa-layer-group"></i>
                         </div>
-                        <h3 class="font-semibold text-base text-slate-700 dark:text-slate-200">Belum ada pesan di channel ini</h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 max-w-xs mt-1">Jadilah yang pertama menyapa atau bagikan link undangan agar temanmu bisa bergabung!</p>
+                        <h3 class="font-semibold text-base text-slate-700 dark:text-slate-200">Belum ada grup aktif</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 max-w-xs mt-1 mb-4">
+                            Buat grup baru untuk mulai berdiskusi atau buka menu kiri untuk memulai Chat Personal.
+                        </p>
+                        <button type="button" id="btn-empty-create-group" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold shadow-md transition flex items-center space-x-2">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Buat Group Baru</span>
+                        </button>
+                    </div>
+                `;
+                const createBtn = document.getElementById('btn-empty-create-group');
+                if (createBtn) createBtn.addEventListener('click', openCreateChannelModal);
+                return;
+            }
+
+            if (messages.length === 0) {
+                const isDm = activeChatType === 'dm' && activeDmPartner;
+                msgContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-center p-6">
+                        <div class="w-16 h-16 rounded-full bg-brand-50 dark:bg-brand-900/20 text-brand-500 flex items-center justify-center text-2xl mb-3">
+                            <i class="fa-regular ${isDm ? 'fa-paper-plane' : 'fa-comments'}"></i>
+                        </div>
+                        <h3 class="font-semibold text-base text-slate-700 dark:text-slate-200">
+                            ${isDm ? `Mulai chat personal dengan ${escapeHtml(activeDmPartner.name)}` : 'Belum ada pesan di grup ini'}
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 max-w-xs mt-1">
+                            ${isDm ? 'Pesan di ruang ini bersifat pribadi 1-on-1 hanya antara kamu dan dia.' : 'Jadilah yang pertama menyapa atau bagikan link undangan agar temanmu bisa bergabung!'}
+                        </p>
                     </div>
                 `;
                 return;
@@ -1534,10 +2011,24 @@
                     ((msg.createdAtMs || 0) - (prevMsg.createdAtMs || 0) < 120000);
 
                 const isMe = currentUser && msg.senderId === currentUser.uid;
+                const isSystemBot = msg.senderId === 'system-bot';
+                const canClickSender = !isMe && !isSystemBot && activeChatType === 'channel';
                 const avatarSrc = getAvatarUrl(msg.senderName, msg.senderColor, msg.senderPhoto);
                 const timeStr = msg.createdAtMs 
                     ? new Date(msg.createdAtMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                     : 'Baru saja';
+
+                const triggerSenderDm = () => {
+                    if (!canClickSender) return;
+                    const userObj = onlineUsers.find(u => u.uid === msg.senderId) || {
+                        uid: msg.senderId,
+                        name: msg.senderName || 'Pengguna',
+                        color: msg.senderColor || '16a34a',
+                        photoURL: msg.senderPhoto || '',
+                        inviteCode: msg.senderCode || ''
+                    };
+                    openPersonalChat(userObj);
+                };
 
                 const row = document.createElement('div');
                 row.className = `group flex items-end space-x-2 ${isMe ? 'flex-row-reverse space-x-reverse' : ''} ${isGrouped ? 'mt-0.5' : 'mt-3'} msg-animate`;
@@ -1551,7 +2042,11 @@
                     const avatarImg = document.createElement('img');
                     avatarImg.src = avatarSrc;
                     avatarImg.alt = msg.senderName || 'User';
-                    avatarImg.className = 'w-8 h-8 rounded-full object-cover flex-shrink-0 shadow-sm';
+                    avatarImg.className = `w-8 h-8 rounded-full object-cover flex-shrink-0 shadow-sm ${canClickSender ? 'cursor-pointer hover:ring-2 hover:ring-brand-500 transition' : ''}`;
+                    if (canClickSender) {
+                        avatarImg.title = `Chat personal dengan ${msg.senderName}`;
+                        avatarImg.addEventListener('click', triggerSenderDm);
+                    }
                     row.appendChild(avatarImg);
                 }
 
@@ -1562,10 +2057,21 @@
                 if (!isGrouped) {
                     const meta = document.createElement('div');
                     meta.className = `flex items-center space-x-2 mb-1 ${isMe ? 'justify-end' : ''}`;
-                    meta.innerHTML = `
-                        <span class="text-[11px] font-semibold text-slate-600 dark:text-slate-300">${escapeHtml(msg.senderName || 'Anonim')}</span>
-                        <span class="text-[10px] text-slate-400">${timeStr}</span>
-                    `;
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = `text-[11px] font-semibold text-slate-600 dark:text-slate-300 ${canClickSender ? 'cursor-pointer hover:text-brand-600 dark:hover:text-brand-400 hover:underline' : ''}`;
+                    nameSpan.innerText = msg.senderName || 'Anonim';
+                    if (canClickSender) {
+                        nameSpan.title = `Chat personal dengan ${msg.senderName}`;
+                        nameSpan.addEventListener('click', triggerSenderDm);
+                    }
+
+                    const timeSpan = document.createElement('span');
+                    timeSpan.className = 'text-[10px] text-slate-400';
+                    timeSpan.innerText = timeStr;
+
+                    meta.appendChild(nameSpan);
+                    meta.appendChild(timeSpan);
                     col.appendChild(meta);
                 }
 
@@ -1662,14 +2168,30 @@
                 return;
             }
 
+            if (activeChatType === 'channel' && channels.length === 0) {
+                showToast("Buat grup terlebih dahulu sebelum mengirim pesan.", "fa-solid fa-circle-info");
+                openCreateChannelModal();
+                return;
+            }
+
+            const dmMetadata = (activeChatType === 'dm' && activeDmPartner) ? {
+                isDm: true,
+                recipientId: activeDmPartner.uid,
+                recipientName: activeDmPartner.name || 'Pengguna',
+                recipientColor: activeDmPartner.color || '16a34a',
+                recipientCode: activeDmPartner.inviteCode || ''
+            } : { isDm: false };
+
             const basePayload = {
                 channelId: activeChannelId,
                 senderId: currentUser.uid,
                 senderName: userProfile.name,
                 senderColor: userProfile.color,
                 senderPhoto: userProfile.photoURL || '',
+                senderCode: userProfile.inviteCode || '',
                 replyTo: replyTarget ? { ...replyTarget } : null,
                 createdAtMs: Date.now(),
+                ...dmMetadata,
                 ...extraFields
             };
 
@@ -1680,8 +2202,9 @@
                     id: 'msg-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
                     ...basePayload
                 };
-                localMessages.push(msgObj);
-                renderMessages(localMessages.filter(m => m.channelId === activeChannelId));
+                allMessages.push(msgObj);
+                renderActiveMessages();
+                renderChatList(document.getElementById('chat-search').value);
                 if (localSyncChannel) localSyncChannel.postMessage({ type: 'NEW_MESSAGE', payload: msgObj });
                 return;
             }
@@ -1844,9 +2367,9 @@
             const href = window.location.href;
             const isPreviewSrcdoc = !href || href.startsWith('about:') || href.startsWith('blob:');
             const inviteText = isPreviewSrcdoc
-                ? `Gabung ke ChatVerse (${activeChannelId}) dengan kode unik saya: #${userProfile.inviteCode || '----'}`
-                : `${href} (Kode Unik: #${userProfile.inviteCode || '----'})`;
-            copyTextToClipboard(inviteText, 'Info undangan berhasil disalin!');
+                ? `Gabung ke ChatVerse dan chat personal dengan saya memakai kode unik: #${userProfile.inviteCode || '----'}`
+                : `${href} (Chat personal dengan saya pakai Kode Unik: #${userProfile.inviteCode || '----'})`;
+            copyTextToClipboard(inviteText, 'Link & kode undangan disalin!');
         }
 
         function showToast(message, iconClass = 'fa-solid fa-circle-check') {
@@ -1901,18 +2424,21 @@
             });
 
             document.getElementById('chat-search').addEventListener('input', (e) => renderChatList(e.target.value));
-            document.getElementById('btn-open-create-channel').addEventListener('click', openCreateChannelModal);
             document.getElementById('create-channel-form').addEventListener('submit', handleCreateChannel);
 
             document.getElementById('btn-header-rename').addEventListener('click', () => openRenameChannelModal(activeChannelId));
             document.getElementById('btn-info-rename').addEventListener('click', () => openRenameChannelModal(activeChannelId));
             document.getElementById('rename-channel-form').addEventListener('submit', handleRenameChannel);
 
+            document.getElementById('btn-header-new-dm').addEventListener('click', openAddByCodeModal);
+            document.getElementById('btn-header-clear-chat').addEventListener('click', confirmClearCurrentChat);
+            document.getElementById('btn-info-clear-chat').addEventListener('click', confirmClearCurrentChat);
             document.getElementById('btn-header-invite').addEventListener('click', inviteFriends);
             document.getElementById('btn-info-invite').addEventListener('click', inviteFriends);
 
             document.getElementById('header-delete-channel-btn').addEventListener('click', () => confirmDeleteChannel(activeChannelId));
             document.getElementById('sidebar-delete-channel-btn').addEventListener('click', () => confirmDeleteChannel(activeChannelId));
+            document.getElementById('btn-remove-dm-thread').addEventListener('click', closeCurrentDmThread);
 
             document.getElementById('btn-open-add-code').addEventListener('click', openAddByCodeModal);
             document.getElementById('add-by-code-form').addEventListener('submit', handleAddByCode);
@@ -1956,22 +2482,31 @@
             });
 
             document.getElementById('confirm-action-btn').addEventListener('click', async () => {
-                if (pendingConfirmCallback) {
-                    await pendingConfirmCallback();
-                }
-                closeModalById('confirm-modal');
-            });
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    emojiPicker.classList.add('hidden');
-                    closeAllDrawers();
-                    ['create-channel-modal', 'rename-channel-modal', 'add-by-code-modal', 'confirm-modal'].forEach(closeModalById);
+                const btn = document.getElementById('confirm-action-btn');
+                if (btn.disabled) return;
+                btn.disabled = true;
+                const prevText = btn.innerText;
+                btn.innerText = 'Memproses...';
+                try {
+                    if (pendingConfirmCallback) {
+                        await pendingConfirmCallback();
+                    }
+                } finally {
+                    btn.disabled = false;
+                    btn.innerText = prevText;
+                    closeModalById('confirm-modal');
                 }
             });
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            deletedChannelIds = new Set(safeStorageGet('chatverse_deleted_channels', []));
+            if (deletedChannelIds.size > 0) {
+                channels = channels.filter(c => !deletedChannelIds.has(c.id));
+                if (channels.length > 0 && !channels.find(c => c.id === activeChannelId)) {
+                    activeChannelId = channels[0].id;
+                }
+            }
             bindUIEvents();
             renderChatList();
 
